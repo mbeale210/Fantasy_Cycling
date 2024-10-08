@@ -1,3 +1,4 @@
+# app/models/stage.py
 from . import db
 
 class Stage(db.Model):
@@ -14,3 +15,4 @@ class StageResult(db.Model):
     time = db.Column(db.Integer, nullable=False)  # Time in seconds
     sprint_pts = db.Column(db.Integer, default=0)
     mountain_pts = db.Column(db.Integer, default=0)
+    fantasy_teams = db.relationship('FantasyTeam', secondary=fantasy_team_stage_result, back_populates='stage_results')
