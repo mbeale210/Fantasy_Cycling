@@ -25,11 +25,11 @@ export const createTeam = createAsyncThunk(
   }
 );
 
-export const updateTeam = createAsyncThunk(
-  "teams/updateTeam",
-  async ({ teamId, teamData }, { rejectWithValue }) => {
+export const updateRoster = createAsyncThunk(
+  "teams/updateRoster",
+  async ({ teamId, rosterData }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/teams/${teamId}`, teamData);
+      const response = await api.put(`/teams/${teamId}/roster`, rosterData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -62,7 +62,7 @@ const teamSlice = createSlice({
       .addCase(createTeam.fulfilled, (state, action) => {
         state.teams.push(action.payload);
       })
-      .addCase(updateTeam.fulfilled, (state, action) => {
+      .addCase(updateRoster.fulfilled, (state, action) => {
         const index = state.teams.findIndex(
           (team) => team.id === action.payload.id
         );

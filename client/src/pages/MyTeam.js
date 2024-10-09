@@ -22,44 +22,8 @@ const MyTeam = () => {
     }
   }, [teams, teamId]);
 
-  const handleActivateGC = (rider) => {
-    const updatedTeam = {
-      ...team,
-      active_gc_rider: rider,
-      bench_gc_riders: team.bench_gc_riders.filter((r) => r.id !== rider.id),
-    };
-    dispatch(updateRoster({ teamId: team.id, rosterData: updatedTeam }));
-  };
-
-  const handleBenchGC = (rider) => {
-    const updatedTeam = {
-      ...team,
-      active_gc_rider: null,
-      bench_gc_riders: [...team.bench_gc_riders, rider],
-    };
-    dispatch(updateRoster({ teamId: team.id, rosterData: updatedTeam }));
-  };
-
-  const handleActivateDomestique = (rider) => {
-    const updatedTeam = {
-      ...team,
-      active_domestiques: [...team.active_domestiques, rider],
-      bench_domestiques: team.bench_domestiques.filter(
-        (r) => r.id !== rider.id
-      ),
-    };
-    dispatch(updateRoster({ teamId: team.id, rosterData: updatedTeam }));
-  };
-
-  const handleBenchDomestique = (rider) => {
-    const updatedTeam = {
-      ...team,
-      active_domestiques: team.active_domestiques.filter(
-        (r) => r.id !== rider.id
-      ),
-      bench_domestiques: [...team.bench_domestiques, rider],
-    };
-    dispatch(updateRoster({ teamId: team.id, rosterData: updatedTeam }));
+  const handleRosterUpdate = (updatedRoster) => {
+    dispatch(updateRoster({ teamId: team.id, rosterData: updatedRoster }));
   };
 
   if (!team) {
@@ -75,15 +39,13 @@ const MyTeam = () => {
       <GCRiders
         activeRider={team.active_gc_rider}
         benchRiders={team.bench_gc_riders}
-        onActivate={handleActivateGC}
-        onBench={handleBenchGC}
+        onUpdate={handleRosterUpdate}
       />
 
       <Domestiques
         activeRiders={team.active_domestiques}
         benchRiders={team.bench_domestiques}
-        onActivate={handleActivateDomestique}
-        onBench={handleBenchDomestique}
+        onUpdate={handleRosterUpdate}
       />
     </div>
   );
