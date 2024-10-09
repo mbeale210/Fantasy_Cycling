@@ -1,6 +1,26 @@
 import React from "react";
 
-const Domestiques = ({ activeRiders, benchRiders, onActivate, onBench }) => {
+const Domestiques = ({ activeRiders, benchRiders, onUpdate }) => {
+  const handleActivate = (rider) => {
+    if (activeRiders.length < 4) {
+      onUpdate({
+        active_domestiques: [...activeRiders.map((r) => r.id), rider.id],
+        bench_domestiques: benchRiders
+          .map((r) => r.id)
+          .filter((id) => id !== rider.id),
+      });
+    }
+  };
+
+  const handleBench = (rider) => {
+    onUpdate({
+      active_domestiques: activeRiders
+        .map((r) => r.id)
+        .filter((id) => id !== rider.id),
+      bench_domestiques: [...benchRiders.map((r) => r.id), rider.id],
+    });
+  };
+
   return (
     <div className="domestiques">
       <h3>Domestiques</h3>
@@ -9,7 +29,7 @@ const Domestiques = ({ activeRiders, benchRiders, onActivate, onBench }) => {
         {activeRiders.map((rider) => (
           <div key={rider.id}>
             {rider.name} - {rider.team}
-            <button onClick={() => onBench(rider)}>Bench</button>
+            <button onClick={() => handleBench(rider)}>Bench</button>
           </div>
         ))}
       </div>
@@ -19,7 +39,7 @@ const Domestiques = ({ activeRiders, benchRiders, onActivate, onBench }) => {
           <div key={rider.id}>
             {rider.name} - {rider.team}
             <button
-              onClick={() => onActivate(rider)}
+              onClick={() => handleActivate(rider)}
               disabled={activeRiders.length >= 4}
             >
               Activate

@@ -1,6 +1,22 @@
 import React from "react";
 
-const GCRiders = ({ activeRider, benchRiders, onActivate, onBench }) => {
+const GCRiders = ({ activeRider, benchRiders, onUpdate }) => {
+  const handleActivate = (rider) => {
+    onUpdate({
+      active_gc_rider: [rider.id],
+      bench_gc_riders: benchRiders
+        .map((r) => r.id)
+        .filter((id) => id !== rider.id),
+    });
+  };
+
+  const handleBench = () => {
+    onUpdate({
+      active_gc_rider: [],
+      bench_gc_riders: [...benchRiders.map((r) => r.id), activeRider.id],
+    });
+  };
+
   return (
     <div className="gc-riders">
       <h3>GC Riders</h3>
@@ -9,7 +25,7 @@ const GCRiders = ({ activeRider, benchRiders, onActivate, onBench }) => {
         {activeRider ? (
           <div>
             {activeRider.name} - {activeRider.team}
-            <button onClick={() => onBench(activeRider)}>Bench</button>
+            <button onClick={handleBench}>Bench</button>
           </div>
         ) : (
           <p>No active GC rider</p>
@@ -20,7 +36,7 @@ const GCRiders = ({ activeRider, benchRiders, onActivate, onBench }) => {
         {benchRiders.map((rider) => (
           <div key={rider.id}>
             {rider.name} - {rider.team}
-            <button onClick={() => onActivate(rider)}>Activate</button>
+            <button onClick={() => handleActivate(rider)}>Activate</button>
           </div>
         ))}
       </div>
