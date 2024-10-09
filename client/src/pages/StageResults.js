@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStages, fetchStageResults } from "../store/slices/stageSlice";
+import RiderResults from "../components/RiderResults";
 
 const StageResults = () => {
   const dispatch = useDispatch();
@@ -36,37 +37,13 @@ const StageResults = () => {
           <option key={stage.id} value={stage.id}>
             Stage {stage.number}: {stage.type} -{" "}
             {new Date(stage.date).toLocaleDateString()}
+            {stage.is_rest_day ? " (Rest Day)" : ""}
           </option>
         ))}
       </select>
 
       {selectedStage && currentStageResults.length > 0 ? (
-        <table>
-          <thead>
-            <tr>
-              <th>Position</th>
-              <th>Rider</th>
-              <th>Team</th>
-              <th>Time</th>
-              <th>Sprint Points</th>
-              <th>Mountain Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentStageResults.map((result, index) => (
-              <tr key={result.id}>
-                <td>{index + 1}</td>
-                <td>{result.rider_name}</td>
-                <td>{result.team}</td>
-                <td>
-                  {new Date(result.time * 1000).toISOString().substr(11, 8)}
-                </td>
-                <td>{result.sprint_pts}</td>
-                <td>{result.mountain_pts}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <RiderResults results={currentStageResults} />
       ) : (
         <p>Select a stage to view results</p>
       )}

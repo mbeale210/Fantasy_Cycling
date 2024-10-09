@@ -1,93 +1,90 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserTeams, updateTeam } from "../store/slices/teamSlice";
-import { fetchRiders } from "../store/slices/riderSlice";
+import { useParams } from "react-router-dom";
+import { fetchUserTeams, updateRoster } from "../store/slices/teamSlice";
+import GCRiders from "../components/GCRiders";
+import Domestiques from "../components/Domestiques";
 
 const MyTeam = () => {
+  const { teamId } = useParams();
   const dispatch = useDispatch();
   const { teams } = useSelector((state) => state.teams);
-  const { riders } = useSelector((state) => state.riders);
-  const [selectedTeam, setSelectedTeam] = useState(null);
-  const [selectedRider, setSelectedRider] = useState("");
+  const [team, setTeam] = useState(null);
 
   useEffect(() => {
     dispatch(fetchUserTeams());
-    dispatch(fetchRiders());
   }, [dispatch]);
 
   useEffect(() => {
-    if (teams.length > 0 && !selectedTeam) {
-      setSelectedTeam(teams[0]);
+    const currentTeam = teams.find((t) => t.id.toString() === teamId);
+    if (currentTeam) {
+      setTeam(currentTeam);
     }
-  }, [teams, selectedTeam]);
+  }, [teams, teamId]);
 
-  const handleAddRider = () => {
-    if (selectedRider && selectedTeam.riders.length < 9) {
-      dispatch(
-        updateTeam({
-          teamId: selectedTeam.id,
-          teamData: {
-            ...selectedTeam,
-            riders: [...selectedTeam.riders, selectedRider],
-          },
-        })
-      );
-      setSelectedRider("");
-    }
+  const handleActivateGC = (rider) => {
+    const updatedTeam = {
+      ...team,
+      active_gc_rider: rider,
+      bench_gc_riders: team.bench_gc_riders.filter((r) => r.id !== rider.id),
+    };
+    dispatch(updateRoster({ teamId: team.id, rosterData: updatedTeam }));
   };
 
-  const handleRemoveRider = (riderId) => {
-    dispatch(
-      updateTeam({
-        teamId: selectedTeam.id,
-        teamData: {
-          ...selectedTeam,
-          riders: selectedTeam.riders.filter((r) => r.id !== riderId),
-        },
-      })
-    );
+  const handleBenchGC = (rider) => {
+    const updatedTeam = {
+      ...team,
+      active_gc_rider: null,
+      bench_gc_riders: [...team.bench_gc_riders, rider],
+    };
+    dispatch(updateRoster({ teamId: team.id, rosterData: updatedTeam }));
   };
 
-  if (!selectedTeam) {
+  const handleActivateDomestique = (rider) => {
+    const updatedTeam = {
+      ...team,
+      active_domestiques: [...team.active_domestiques, rider],
+      bench_domestiques: team.bench_domestiques.filter(
+        (r) => r.id !== rider.id
+      ),
+    };
+    dispatch(updateRoster({ teamId: team.id, rosterData: updatedTeam }));
+  };
+
+  const handleBenchDomestique = (rider) => {
+    const updatedTeam = {
+      ...team,
+      active_domestiques: team.active_domestiques.filter(
+        (r) => r.id !== rider.id
+      ),
+      bench_domestiques: [...team.bench_domestiques, rider],
+    };
+    dispatch(updateRoster({ teamId: team.id, rosterData: updatedTeam }));
+  };
+
+  if (!team) {
     return <div>Loading team...</div>;
   }
 
   return (
     <div className="my-team">
-      <h1>{selectedTeam.name}</h1>
-      <p>Total Points: {selectedTeam.sprint_pts + selectedTeam.mountain_pts}</p>
+      <h1>{team.name}</h1>
+      <p>Total Points: {team.sprint_pts + team.mountain_pts}</p>
+      <p>Trades Left: {team.trades_left}</p>
 
-      <h2>Team Riders</h2>
-      <ul>
-        {selectedTeam.riders.map((rider) => (
-          <li key={rider.id}>
-            {rider.name} - {rider.team}
-            <button onClick={() => handleRemoveRider(rider.id)}>Remove</button>
-          </li>
-        ))}
-      </ul>
+      <GCRiders
+        activeRider={team.active_gc_rider}
+        benchRiders={team.bench_gc_riders}
+        onActivate={handleActivateGC}
+        onBench={handleBenchGC}
+      />
 
-      {selectedTeam.riders.length < 9 && (
-        <div>
-          <h3>Add Rider</h3>
-          <select
-            value={selectedRider}
-            onChange={(e) => setSelectedRider(e.target.value)}
-          >
-            <option value="">Select a rider</option>
-            {riders
-              .filter(
-                (rider) => !selectedTeam.riders.some((r) => r.id === rider.id)
-              )
-              .map((rider) => (
-                <option key={rider.id} value={rider.id}>
-                  {rider.name} - {rider.team}
-                </option>
-              ))}
-          </select>
-          <button onClick={handleAddRider}>Add to Team</button>
-        </div>
-      )}
+      <Domestiques
+        activeRiders={team.active_domestiques}
+        benchRiders={team.bench_domestiques}
+        onActivate={handleActivateDomestique}
+        onBench={handleBenchDomestique}
+      />
     </div>
   );
 };

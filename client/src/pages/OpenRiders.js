@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRiders } from "../store/slices/riderSlice";
-import { updateTeam } from "../store/slices/teamSlice";
+import { updateRoster } from "../store/slices/teamSlice";
+import RiderList from "../components/RiderList";
 
 const OpenRiders = () => {
   const dispatch = useDispatch();
@@ -15,9 +16,14 @@ const OpenRiders = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const allTeamRiders = teams.flatMap((team) =>
-      team.riders.map((rider) => rider.id)
-    );
+    const allTeamRiders = teams
+      .flatMap((team) => [
+        team.active_gc_rider,
+        ...team.active_domestiques,
+        ...team.bench_gc_riders,
+        ...team.bench_domestiques,
+      ])
+      .map((rider) => rider.id);
     setFilteredRiders(
       riders.filter((rider) => !allTeamRiders.includes(rider.id))
     );
@@ -30,17 +36,57 @@ const OpenRiders = () => {
   const handleDraft = (rider) => {
     // Assuming the user has only one team for simplicity
     const userTeam = teams[0];
-    if (userTeam && userTeam.riders.length < 9) {
-      dispatch(
-        updateTeam({
-          teamId: userTeam.id,
-          teamData: { ...userTeam, riders: [...userTeam.riders, rider] },
-        })
-      );
+    if (userTeam && userTeam.trades_left > 0) {
+      const totalRiders = [
+        userTeam.active_gc_rider,
+        ...userTeam.active_domestiques,
+        ...userTeam.bench_gc_riders,
+        ...userTeam.bench_domestiques,
+      ].length;
+
+      if (totalRiders < 9) {
+        let newRoster = {
+          active_gc_rider: userTeam.active_gc_rider
+            ? [userTeam.active_gc_rider.id]
+            : [],
+          active_domestiques: userTeam.active_domestiques.map((r) => r.id),
+          bench_gc_riders: userTeam.bench_gc_riders.map((r) => r.id),
+          bench_domestiques: userTeam.bench_domestiques.map((r) => r.id),
+        };
+
+        if (rider.is_gc) {
+          if (newRoster.active_gc_rider.length === 0) {
+            newRoster.active_gc_rider = [rider.id];
+          } else if (newRoster.bench_gc_riders.length < 2) {
+            newRoster.bench_gc_riders.push(rider.id);
+          } else {
+            alert("You can't add more GC riders to your team.");
+            return;
+          }
+        } else {
+          if (newRoster.active_domestiques.length < 4) {
+            newRoster.active_domestiques.push(rider.id);
+          } else if (newRoster.bench_domestiques.length < 2) {
+            newRoster.bench_domestiques.push(rider.id);
+          } else {
+            alert("You can't add more domestique riders to your team.");
+            return;
+          }
+        }
+
+        dispatch(
+          updateRoster({
+            teamId: userTeam.id,
+            rosterData: newRoster,
+          })
+        );
+      } else {
+        alert(
+          "Your team is full. You need to remove a rider before adding a new one."
+        );
+      }
     } else {
-      alert(
-        "You can't add more riders to your team or you don't have a team yet."
-      );
+      alert("You don't have any trades left or you don't have a team yet.");
     }
   };
 
@@ -65,30 +111,7 @@ const OpenRiders = () => {
         value={searchTerm}
         onChange={handleSearch}
       />
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Team</th>
-            <th>Sprint Points</th>
-            <th>Mountain Points</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {displayRiders.map((rider) => (
-            <tr key={rider.id}>
-              <td>{rider.name}</td>
-              <td>{rider.team}</td>
-              <td>{rider.sprint_pts}</td>
-              <td>{rider.mountain_pts}</td>
-              <td>
-                <button onClick={() => handleDraft(rider)}>Draft</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <RiderList riders={displayRiders} onDraft={handleDraft} />
     </div>
   );
 };

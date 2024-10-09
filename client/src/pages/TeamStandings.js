@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserTeams } from "../store/slices/teamSlice";
+import TeamSummary from "../components/TeamSummary";
 
 const TeamStandings = () => {
   const dispatch = useDispatch();
@@ -22,28 +23,12 @@ const TeamStandings = () => {
   return (
     <div className="team-standings">
       <h1>Team Standings</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Team Name</th>
-            <th>Total Points</th>
-            <th>Sprint Points</th>
-            <th>Mountain Points</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedTeams.map((team, index) => (
-            <tr key={team.id}>
-              <td>{index + 1}</td>
-              <td>{team.name}</td>
-              <td>{team.sprint_pts + team.mountain_pts}</td>
-              <td>{team.sprint_pts}</td>
-              <td>{team.mountain_pts}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {sortedTeams.map((team, index) => (
+        <div key={team.id}>
+          <h2>Rank: {index + 1}</h2>
+          <TeamSummary team={team} />
+        </div>
+      ))}
     </div>
   );
 };
