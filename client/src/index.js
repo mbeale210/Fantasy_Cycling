@@ -5,7 +5,7 @@ import { store } from "./store";
 import App from "./App";
 import "./index.css";
 
-ReactDOM.render(
+ReactDOM(
   <React.StrictMode>
     <Provider store={store}>
       <App />

@@ -1,9 +1,4 @@
-from . import db
-
-rider_fantasy_team = db.Table('rider_fantasy_team',
-    db.Column('rider_id', db.Integer, db.ForeignKey('rider.id'), primary_key=True),
-    db.Column('fantasy_team_id', db.Integer, db.ForeignKey('fantasy_team.id'), primary_key=True)
-)
+from app import db
 
 class Rider(db.Model):
     __tablename__ = 'rider'
@@ -14,7 +9,6 @@ class Rider(db.Model):
     sprint_pts = db.Column(db.Integer, default=0)
     mountain_pts = db.Column(db.Integer, default=0)
     is_gc = db.Column(db.Boolean, default=False)
-    fantasy_teams = db.relationship('FantasyTeam', secondary=rider_fantasy_team, back_populates='riders')
     stage_results = db.relationship('StageResult', backref='rider', lazy=True)
 
     def __repr__(self):

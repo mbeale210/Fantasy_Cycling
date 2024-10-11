@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
-from app.models import FantasyTeam, Rider, Stage, db
+from app.models import FantasyTeam, Rider, Stage
+from app import db
 from flask_login import login_required, current_user
 
 bp = Blueprint('teams', __name__, url_prefix='/teams')

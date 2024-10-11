@@ -1,9 +1,5 @@
 from app import create_app, db
-from app.models.user import User
-from app.models.rider import Rider
-from app.models.team import FantasyTeam
-from app.models.stage import Stage, StageResult
-from app.models.league import League
+from app.models import User, Rider, FantasyTeam, Stage, StageResult, League
 
 app = create_app()
 
