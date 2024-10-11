@@ -17,13 +17,9 @@ def scrape_procyclingstats_rankings():
             if len(cols) >= 5:
                 try:
                     rank = int(cols[0].text.strip())
-                    name_element = cols[2].find('a')
-                    if name_element:
-                        name = name_element.text.strip()
-                    else:
-                        name = cols[2].text.strip()
+                    name = cols[2].text.strip()
                     team = cols[3].text.strip()
-                    points = int(cols[4].text.strip().replace(',', ''))
+                    points = int(cols[4].text.strip().replace('.', ''))  # Remove dots used as thousand separators
                     
                     riders.append({
                         'rank': rank,

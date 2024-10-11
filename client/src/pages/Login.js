@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { loginUser } from "../store/slices/authSlice";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { error, loading } = useSelector((state) => state.auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const result = await dispatch(loginUser({ username, password }));
     if (result.payload) {
-      history.push("/dashboard");
+      navigate("/dashboard");
     }
   };
 

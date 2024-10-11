@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -19,20 +19,20 @@ function App() {
     <Router>
       <div className="App">
         <Header />
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/login" component={Login} />
-          <Route path="/register" component={Register} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           {isAuthenticated && (
             <>
-              <Route path="/dashboard" component={Dashboard} />
-              <Route path="/my-team/:teamId" component={MyTeam} />
-              <Route path="/results" component={StageResults} />
-              <Route path="/riders" component={OpenRiders} />
-              <Route path="/standings" component={TeamStandings} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/my-team/:teamId" element={<MyTeam />} />
+              <Route path="/results" element={<StageResults />} />
+              <Route path="/riders" element={<OpenRiders />} />
+              <Route path="/standings" element={<TeamStandings />} />
             </>
           )}
-        </Switch>
+        </Routes>
         <Footer />
       </div>
     </Router>

@@ -16,3 +16,6 @@ class Rider(db.Model):
     is_gc = db.Column(db.Boolean, default=False)
     fantasy_teams = db.relationship('FantasyTeam', secondary=rider_fantasy_team, back_populates='riders')
     stage_results = db.relationship('StageResult', backref='rider', lazy=True)
+
+def __repr__(self):
+    return f'<Rider {self.name}>'
