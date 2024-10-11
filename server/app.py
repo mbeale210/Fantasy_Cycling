@@ -1,10 +1,8 @@
-from app import create_app
-from app.models import db
-from config import Config
+from app import create_app, db
+from app.models import User, Rider, Stage, StageResult  # Import all your models
 
-app = create_app(Config)
+app = create_app()
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+@app.shell_context_processor
+def make_shell_context():
+    return {'db': db, 'User': User, 'Rider': Rider, 'Stage': Stage, 'StageResult': StageResult}
