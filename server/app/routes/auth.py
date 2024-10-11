@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models import User, db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from datetime import timedelta
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -23,8 +24,8 @@ def login():
     data = request.json
     user = User.query.filter_by(username=data['username']).first()
     if user and user.check_password(data['password']):
-        access_token = create_access_token(identity=user.id)
-        return jsonify(access_token=access_token), 200
+        access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=1))
+        return jsonify(access_token=access_token, user_id=user.id, username=user.username), 200
     return jsonify({"message": "Invalid credentials"}), 401
 
 @bp.route('/profile', methods=['GET'])

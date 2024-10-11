@@ -1,26 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../store/slices/authSlice";
+import { loginUser, clearError } from "../store/slices/authSlice";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { error, loading } = useSelector((state) => state.auth);
+  const { error, loading, isAuthenticated } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+    return () => {
+      dispatch(clearError());
+    };
+  }, [isAuthenticated, navigate, dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(loginUser({ username, password }));
-    if (result.payload) {
-      navigate("/dashboard");
-    }
+    dispatch(loginUser({ username, password }));
   };
 
   return (
-    <div className="login">
-      <h2>Login</h2>
+    <div className="login-page">
+      <h1>Login</h1>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="username">Username:</label>
@@ -43,10 +49,10 @@ const Login = () => {
           />
         </div>
         <button type="submit" disabled={loading}>
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error">{error.message}</p>}
     </div>
   );
 };
