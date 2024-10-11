@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../store/slices/authSlice";
+import { logoutUser } from "../store/slices/authSlice";
 import Navigation from "./Navigation";
 
 const Header = () => {
@@ -8,15 +8,15 @@ const Header = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logoutUser());
   };
 
   return (
     <header>
       <Navigation />
-      {isAuthenticated && (
+      {isAuthenticated && user && (
         <div>
-          <span>Welcome, {user?.username}</span>
+          <span>Welcome, {user.username}</span>
           <button onClick={handleLogout}>Logout</button>
         </div>
       )}

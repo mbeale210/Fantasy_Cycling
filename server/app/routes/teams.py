@@ -1,24 +1,22 @@
 from flask import Blueprint, request, jsonify
 from app.models import FantasyTeam, Rider, Stage, db
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_login import login_required, current_user
 
 bp = Blueprint('teams', __name__, url_prefix='/teams')
 
 @bp.route('', methods=['POST'])
-@jwt_required()
+@login_required
 def create_team():
     data = request.json
-    user_id = get_jwt_identity()
-    new_team = FantasyTeam(name=data['name'], user_id=user_id, league_id=data.get('league_id'))
+    new_team = FantasyTeam(name=data['name'], user_id=current_user.id, league_id=data.get('league_id'))
     db.session.add(new_team)
     db.session.commit()
     return jsonify({"message": "Team created successfully", "id": new_team.id}), 201
 
 @bp.route('', methods=['GET'])
-@jwt_required()
+@login_required
 def get_user_teams():
-    user_id = get_jwt_identity()
-    teams = FantasyTeam.query.filter_by(user_id=user_id).all()
+    teams = FantasyTeam.query.filter_by(user_id=current_user.id).all()
     return jsonify([{
         "id": team.id,
         "name": team.name,
@@ -28,9 +26,11 @@ def get_user_teams():
     } for team in teams]), 200
 
 @bp.route('/<int:team_id>', methods=['GET'])
-@jwt_required()
+@login_required
 def get_team(team_id):
     team = FantasyTeam.query.get_or_404(team_id)
+    if team.user_id != current_user.id:
+        return jsonify({"message": "Unauthorized"}), 403
     return jsonify({
         "id": team.id,
         "name": team.name,
@@ -60,10 +60,10 @@ def get_team(team_id):
     }), 200
 
 @bp.route('/<int:team_id>/roster', methods=['PUT'])
-@jwt_required()
+@login_required
 def update_roster(team_id):
     team = FantasyTeam.query.get_or_404(team_id)
-    if team.user_id != get_jwt_identity():
+    if team.user_id != current_user.id:
         return jsonify({"message": "Unauthorized"}), 403
     
     data = request.json
@@ -96,10 +96,10 @@ def update_roster(team_id):
     return jsonify({"message": "Roster updated successfully"}), 200
 
 @bp.route('/<int:team_id>/riders', methods=['POST'])
-@jwt_required()
+@login_required
 def add_rider_to_team(team_id):
     team = FantasyTeam.query.get_or_404(team_id)
-    if team.user_id != get_jwt_identity():
+    if team.user_id != current_user.id:
         return jsonify({"message": "Unauthorized"}), 403
     data = request.json
     rider = Rider.query.get_or_404(data['rider_id'])
@@ -110,10 +110,10 @@ def add_rider_to_team(team_id):
     return jsonify({"message": "Unable to add rider to team"}), 400
 
 @bp.route('/<int:team_id>/riders/<int:rider_id>', methods=['DELETE'])
-@jwt_required()
+@login_required
 def remove_rider_from_team(team_id, rider_id):
     team = FantasyTeam.query.get_or_404(team_id)
-    if team.user_id != get_jwt_identity():
+    if team.user_id != current_user.id:
         return jsonify({"message": "Unauthorized"}), 403
     rider = Rider.query.get_or_404(rider_id)
     if rider in team.riders:

@@ -1,11 +1,5 @@
-from flask import Blueprint, request, jsonify
-from app.models import Stage, StageResult, Rider, db
-from flask_jwt_extended import jwt_required
-
-bp = Blueprint('stages', __name__, url_prefix='/stages')
-
 @bp.route('', methods=['GET'])
-@jwt_required()
+@login_required
 def get_stages():
     stages = Stage.query.all()
     return jsonify([{
@@ -17,7 +11,7 @@ def get_stages():
     } for stage in stages]), 200
 
 @bp.route('/<int:stage_id>/results', methods=['GET'])
-@jwt_required()
+@login_required
 def get_stage_results(stage_id):
     results = StageResult.query.filter_by(stage_id=stage_id).all()
     return jsonify([{
@@ -30,7 +24,7 @@ def get_stage_results(stage_id):
     } for result in results]), 200
 
 @bp.route('/<int:stage_id>/results', methods=['POST'])
-@jwt_required()
+@login_required
 def add_stage_result(stage_id):
     data = request.json
     new_result = StageResult(

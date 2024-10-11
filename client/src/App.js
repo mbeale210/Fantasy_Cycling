@@ -9,14 +9,14 @@ import { useSelector, useDispatch } from "react-redux";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Login from "./pages/Login"; // Updated import path
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import MyTeam from "./pages/MyTeam";
 import StageResults from "./pages/StageResults";
 import OpenRiders from "./pages/OpenRiders";
 import TeamStandings from "./pages/TeamStandings";
-import { loginUser } from "./store/slices/authSlice";
+import { fetchUser } from "./store/slices/authSlice";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
@@ -37,9 +37,8 @@ function App() {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token && !isAuthenticated) {
-      dispatch(loginUser());
+    if (!isAuthenticated) {
+      dispatch(fetchUser());
     }
   }, [dispatch, isAuthenticated]);
 
