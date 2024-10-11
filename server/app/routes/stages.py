@@ -1,3 +1,9 @@
+from flask import Blueprint, request, jsonify
+from app.models import Stage, StageResult, Rider, db
+from flask_login import login_required
+
+bp = Blueprint('stages', __name__, url_prefix='/stages')
+
 @bp.route('', methods=['GET'])
 @login_required
 def get_stages():

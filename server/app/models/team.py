@@ -1,6 +1,12 @@
 from . import db
 
+rider_fantasy_team = db.Table('rider_fantasy_team',
+    db.Column('rider_id', db.Integer, db.ForeignKey('rider.id'), primary_key=True),
+    db.Column('fantasy_team_id', db.Integer, db.ForeignKey('fantasy_team.id'), primary_key=True)
+)
+
 class FantasyTeam(db.Model):
+    __tablename__ = 'fantasy_team'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -8,7 +14,7 @@ class FantasyTeam(db.Model):
     sprint_pts = db.Column(db.Integer, default=0)
     mountain_pts = db.Column(db.Integer, default=0)
     trades_left = db.Column(db.Integer, default=2)
-    riders = db.relationship('Rider', secondary='rider_fantasy_team', back_populates='fantasy_teams')
+    riders = db.relationship('Rider', secondary=rider_fantasy_team, back_populates='fantasy_teams')
     active_gc_rider_id = db.Column(db.Integer, db.ForeignKey('rider.id'))
     active_gc_rider = db.relationship('Rider', foreign_keys=[active_gc_rider_id])
     active_domestiques = db.relationship('Rider', 
