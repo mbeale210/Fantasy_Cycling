@@ -30,6 +30,8 @@ def seed_stages():
     start_date = date(2024, 7, 1)  # Assuming the Tour starts on July 1, 2024
     stages = []
     stage_number = 1
+    time_trials = [5, 20]  # Stage numbers for time trials (e.g., stage 5 and 20)
+
     for i in range(1, 24):  # 21 stages + 2 rest days = 23 days
         if i in [8, 15]:  # Rest days after stage 7 and 14
             stage = Stage(
@@ -39,7 +41,11 @@ def seed_stages():
                 is_rest_day=True
             )
         else:
-            stage_type = random.choice(['Flat', 'Mountain', 'Time Trial'])
+            if stage_number in time_trials:
+                stage_type = 'Time Trial'
+            else:
+                stage_type = random.choice(['Flat', 'Mountain'])
+            
             stage = Stage(
                 number=stage_number,
                 date=start_date + timedelta(days=i-1),
@@ -48,6 +54,7 @@ def seed_stages():
             )
             stage_number += 1
         stages.append(stage)
+    
     db.session.add_all(stages)
     db.session.commit()
     return stages
@@ -56,10 +63,15 @@ def seed_stage_results(riders, stages):
     for stage in stages:
         if not stage.is_rest_day:
             for rider in riders:
+                if stage.type == 'Time Trial':
+                    time = random.randint(3600, 7200)  # 1 to 2 hours (in seconds)
+                else:
+                    time = random.randint(14400, 15800)  # 4 to 4.4 hours (in seconds)
+                
                 result = StageResult(
                     rider_id=rider.id,
                     stage_id=stage.id,
-                    time=random.randint(10000, 20000),  # Random time between ~2.7 and 5.5 hours
+                    time=time,
                     sprint_pts=random.randint(0, 50) if stage.type == 'Flat' else 0,
                     mountain_pts=random.randint(0, 50) if stage.type == 'Mountain' else 0
                 )
@@ -77,7 +89,7 @@ def main():
         
         print("Seeding stages...")
         stages = seed_stages()
-        print(f"Seeded {len(stages)} stages (including 2 rest days)")
+        print(f"Seeded {len(stages)} stages (including 2 rest days and 2 time trials)")
         
         print("Seeding stage results...")
         seed_stage_results(riders, stages)
