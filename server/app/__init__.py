@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_cors import CORS
-from config import Config
+from server.config import Config  # Update this line
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -18,10 +18,10 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     CORS(app)
 
-    # Import models here to ensure they are registered with SQLAlchemy
-    from app.models import user, rider, team, stage, league
+    # Update these import statements
+    from server.app.models import user, rider, team, stage, league
+    from server.app.routes import auth, teams, riders, stages, leagues
 
-    from app.routes import auth, teams, riders, stages, leagues
     app.register_blueprint(auth.bp)
     app.register_blueprint(teams.bp)
     app.register_blueprint(riders.bp)
