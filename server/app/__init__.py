@@ -3,18 +3,21 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from .models import db
-from .routes import auth, teams, riders, stages, leagues
+from config import Config
 
-def create_app(config_class):
+db = SQLAlchemy()
+migrate = Migrate()
+
+def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
     db.init_app(app)
-    Migrate(app, db)
+    migrate.init_app(app, db)
     JWTManager(app)
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
+    from .routes import auth, teams, riders, stages, leagues
     app.register_blueprint(auth.bp)
     app.register_blueprint(teams.bp)
     app.register_blueprint(riders.bp)
