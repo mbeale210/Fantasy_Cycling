@@ -7,11 +7,37 @@ from config import Config
 
 app = create_app(Config)
 
+# def seed_riders():
+#     riders_data = scrape_procyclingstats_rankings()
+#     if not riders_data:
+#         print("Scraping failed. Using mock data.")
+#         riders_data = generate_mock_riders()
+    
+#     riders = []
+#     for rider_data in riders_data:
+#         rider = Rider(
+#             name=rider_data['name'],
+#             rank=rider_data['rank'],
+#             career_points=rider_data['points'],
+#             is_gc=random.choice([True, False])  # Randomly assign GC status
+#         )
+#         riders.append(rider)
+#     db.session.add_all(riders)
+#     db.session.commit()
+#     return riders
+
+def generate_mock_riders(count=100):
+    riders = []
+    for i in range(count):
+        riders.append({
+            'name': f"Rider {i + 1}",
+            'rank': i + 1,
+            'points': random.randint(100, 5000)
+        })
+    return riders
+
 def seed_riders():
-    riders_data = scrape_procyclingstats_rankings()
-    if not riders_data:
-        print("Scraping failed. Using mock data.")
-        riders_data = generate_mock_riders()
+    riders_data = generate_mock_riders(100)  # Generate 100 mock riders
     
     riders = []
     for rider_data in riders_data:
