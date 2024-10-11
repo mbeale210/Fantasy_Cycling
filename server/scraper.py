@@ -16,20 +16,20 @@ def scrape_procyclingstats_rankings():
             cols = row.find_all('td')
             if len(cols) >= 5:
                 try:
-                    rank = cols[0].text.strip()
+                    rank = int(cols[0].text.strip())
                     name_element = cols[2].find('a')
                     if name_element:
                         name = name_element.text.strip()
                     else:
                         name = cols[2].text.strip()
                     team = cols[3].text.strip()
-                    points = cols[4].text.strip()
+                    points = int(cols[4].text.strip().replace(',', ''))
                     
                     riders.append({
-                        'rank': int(rank),
+                        'rank': rank,
                         'name': name,
                         'team': team,
-                        'career_points': int(points.replace(',', ''))
+                        'career_points': points
                     })
                 except (ValueError, AttributeError, IndexError) as e:
                     print(f"Error processing row: {e}")
@@ -55,3 +55,5 @@ if __name__ == "__main__":
         print("No riders scraped. Generating mock data.")
         scraped_riders = generate_mock_riders()
     print(f"Scraped/Generated {len(scraped_riders)} riders")
+    for rider in scraped_riders[:5]:  # Print first 5 riders for verification
+        print(rider)

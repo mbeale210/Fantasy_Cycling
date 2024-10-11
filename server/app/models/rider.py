@@ -6,6 +6,7 @@ rider_fantasy_team = db.Table('rider_fantasy_team',
 )
 
 class Rider(db.Model):
+    __tablename__ = 'rider'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     team = db.Column(db.String(100), nullable=False)

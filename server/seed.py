@@ -89,7 +89,7 @@ def main():
         
         print("Seeding stages...")
         stages = seed_stages()
-        print(f"Seeded {len(stages)} stages (including 2 rest days and 2 time trials)")
+        print(f"Seeded {len(stages)} stages (including 2 rest days)")
         
         print("Seeding stage results...")
         seed_stage_results(riders, stages)
