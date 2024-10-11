@@ -1,12 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager
+from flask_login import LoginManager
 from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
-jwt = JWTManager()
+login_manager = LoginManager()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -14,7 +14,10 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
-    jwt.init_app(app)
+    login_manager.init_app(app)
+
+    # Import models here to ensure they are registered with SQLAlchemy
+    from app.models import user, rider, team, stage, league
 
     from app.routes import auth, teams, riders, stages, leagues
     app.register_blueprint(auth.bp)
@@ -22,5 +25,9 @@ def create_app(config_class=Config):
     app.register_blueprint(riders.bp)
     app.register_blueprint(stages.bp)
     app.register_blueprint(leagues.bp)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return user.User.query.get(int(user_id))
 
     return app
