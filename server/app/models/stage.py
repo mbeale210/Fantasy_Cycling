@@ -2,6 +2,8 @@ from app import db
 
 class Stage(db.Model):
     __tablename__ = 'stage'
+    __table_args__ = {'extend_existing': True}  # Add this to avoid table redefinition errors
+
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.Integer, nullable=False)
     date = db.Column(db.Date, nullable=False)
@@ -14,6 +16,8 @@ class Stage(db.Model):
 
 class StageResult(db.Model):
     __tablename__ = 'stage_result'
+    __table_args__ = {'extend_existing': True}  # Add this to avoid table redefinition errors
+
     id = db.Column(db.Integer, primary_key=True)
     rider_id = db.Column(db.Integer, db.ForeignKey('rider.id'), nullable=False)
     stage_id = db.Column(db.Integer, db.ForeignKey('stage.id'), nullable=False)

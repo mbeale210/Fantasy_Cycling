@@ -2,6 +2,8 @@ from app import db
 
 class FantasyTeam(db.Model):
     __tablename__ = 'fantasy_team'
+    __table_args__ = {'extend_existing': True}  # Add this to avoid table redefinition errors
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -12,15 +14,15 @@ class FantasyTeam(db.Model):
     sprint_pts = db.Column(db.Integer, default=0)
     mountain_pts = db.Column(db.Integer, default=0)
 
-    active_domestiques = db.relationship('Rider', 
+    active_domestiques = db.relationship('Rider',
                                          secondary='active_domestiques',
                                          primaryjoin="and_(FantasyTeam.id==active_domestiques.c.fantasy_team_id, "
                                                      "active_domestiques.c.is_active==True)")
-    bench_gc_riders = db.relationship('Rider', 
+    bench_gc_riders = db.relationship('Rider',
                                       secondary='bench_gc_riders',
                                       primaryjoin="and_(FantasyTeam.id==bench_gc_riders.c.fantasy_team_id, "
                                                   "bench_gc_riders.c.is_active==False)")
-    bench_domestiques = db.relationship('Rider', 
+    bench_domestiques = db.relationship('Rider',
                                         secondary='bench_domestiques',
                                         primaryjoin="and_(FantasyTeam.id==bench_domestiques.c.fantasy_team_id, "
                                                     "bench_domestiques.c.is_active==False)")
@@ -28,20 +30,24 @@ class FantasyTeam(db.Model):
     def __repr__(self):
         return f'<FantasyTeam {self.name}>'
 
+# Update these association tables
 active_domestiques = db.Table('active_domestiques',
     db.Column('fantasy_team_id', db.Integer, db.ForeignKey('fantasy_team.id'), primary_key=True),
     db.Column('rider_id', db.Integer, db.ForeignKey('rider.id'), primary_key=True),
-    db.Column('is_active', db.Boolean, default=True)
+    db.Column('is_active', db.Boolean, default=True),
+    extend_existing=True  # Add this to avoid table redefinition errors
 )
 
 bench_gc_riders = db.Table('bench_gc_riders',
     db.Column('fantasy_team_id', db.Integer, db.ForeignKey('fantasy_team.id'), primary_key=True),
     db.Column('rider_id', db.Integer, db.ForeignKey('rider.id'), primary_key=True),
-    db.Column('is_active', db.Boolean, default=False)
+    db.Column('is_active', db.Boolean, default=False),
+    extend_existing=True  # Add this to avoid table redefinition errors
 )
 
 bench_domestiques = db.Table('bench_domestiques',
     db.Column('fantasy_team_id', db.Integer, db.ForeignKey('fantasy_team.id'), primary_key=True),
     db.Column('rider_id', db.Integer, db.ForeignKey('rider.id'), primary_key=True),
-    db.Column('is_active', db.Boolean, default=False)
+    db.Column('is_active', db.Boolean, default=False),
+    extend_existing=True  # Add this to avoid table redefinition errors
 )

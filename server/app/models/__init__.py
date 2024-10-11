@@ -3,12 +3,14 @@ from app import db
 # Association tables
 rider_fantasy_team = db.Table('rider_fantasy_team',
     db.Column('rider_id', db.Integer, db.ForeignKey('rider.id'), primary_key=True),
-    db.Column('fantasy_team_id', db.Integer, db.ForeignKey('fantasy_team.id'), primary_key=True)
+    db.Column('fantasy_team_id', db.Integer, db.ForeignKey('fantasy_team.id'), primary_key=True),
+    extend_existing=True  # Fix to avoid the duplicate table definition error
 )
 
 user_league = db.Table('user_league',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('league_id', db.Integer, db.ForeignKey('league.id'), primary_key=True)
+    db.Column('league_id', db.Integer, db.ForeignKey('league.id'), primary_key=True),
+    extend_existing=True  # Added here to avoid duplicate definition
 )
 
 # Import all models
