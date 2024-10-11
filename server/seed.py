@@ -17,8 +17,8 @@ def seed_riders():
     for rider_data in riders_data:
         rider = Rider(
             name=rider_data['name'],
-            team=rider_data['team'],
-            career_points=rider_data['career_points'],
+            rank=rider_data['rank'],
+            career_points=rider_data['points'],
             is_gc=random.choice([True, False])  # Randomly assign GC status
         )
         riders.append(rider)
@@ -80,7 +80,7 @@ def seed_stage_results(riders, stages):
 
 def main():
     with app.app_context():
-        db.drop_all()  # Be careful with this in a production environment!
+        # Ensure all tables are created
         db.create_all()
         
         print("Seeding riders...")
