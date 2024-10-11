@@ -1,6 +1,6 @@
 from app import create_app, db
 from app.models import Stage, Rider, StageResult
-from scraper import scrape_procyclingstats_rankings
+from scraper import scrape_procyclingstats_rankings, generate_mock_riders
 from datetime import date, timedelta
 import random
 from config import Config
@@ -9,6 +9,10 @@ app = create_app(Config)
 
 def seed_riders():
     riders_data = scrape_procyclingstats_rankings()
+    if not riders_data:
+        print("Scraping failed. Using mock data.")
+        riders_data = generate_mock_riders()
+    
     riders = []
     for rider_data in riders_data:
         rider = Rider(
