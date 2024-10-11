@@ -18,7 +18,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <h1>Welcome, {user.username}!</h1>
+      <h1>Welcome, {user?.username}!</h1>
 
       <section className="my-teams">
         <h2>My Teams</h2>

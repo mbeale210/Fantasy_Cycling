@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../store/slices/authSlice";
+import { registerUser, clearError } from "../store/slices/authSlice";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -9,14 +9,22 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { error, loading } = useSelector((state) => state.auth);
+  const { error, loading, isAuthenticated } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+    return () => {
+      dispatch(clearError());
+    };
+  }, [isAuthenticated, navigate, dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(registerUser({ username, email, password }));
-    if (result.payload) {
-      navigate("/login");
-    }
+    dispatch(registerUser({ username, email, password }));
   };
 
   return (
@@ -54,10 +62,10 @@ const Register = () => {
           />
         </div>
         <button type="submit" disabled={loading}>
-          Register
+          {loading ? "Registering..." : "Register"}
         </button>
       </form>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error">{error.message}</p>}
     </div>
   );
 };
