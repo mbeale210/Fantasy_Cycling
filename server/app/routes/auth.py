@@ -1,9 +1,9 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from flask_login import login_user, logout_user, login_required, current_user
 from app.models.user import User
 from app import db
 
-bp = Blueprint('auth', __name__)
+bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/register', methods=['POST'])
 def register():
@@ -24,7 +24,8 @@ def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
     if user and user.check_password(data['password']):
-        login_user(user)
+        login_user(user, remember=True)
+        session.permanent = True  # Use permanent session
         return jsonify({
             'message': 'Logged in successfully',
             'user': {
@@ -41,11 +42,13 @@ def logout():
     logout_user()
     return jsonify({'message': 'Logged out successfully'}), 200
 
-@bp.route('/user')
-@login_required
+@bp.route('/user', methods=['GET'])
 def get_user():
-    return jsonify({
-        'id': current_user.id,
-        'username': current_user.username,
-        'email': current_user.email
-    }), 200
+    if current_user.is_authenticated:
+        return jsonify({
+            'id': current_user.id,
+            'username': current_user.username,
+            'email': current_user.email
+        }), 200
+    else:
+        return jsonify({'message': 'User not authenticated'}), 401

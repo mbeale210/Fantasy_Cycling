@@ -2,7 +2,7 @@ from app import db
 
 class FantasyTeam(db.Model):
     __tablename__ = 'fantasy_team'
-    __table_args__ = {'extend_existing': True}  # Add this to avoid table redefinition errors
+    __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -30,24 +30,23 @@ class FantasyTeam(db.Model):
     def __repr__(self):
         return f'<FantasyTeam {self.name}>'
 
-# Update these association tables
 active_domestiques = db.Table('active_domestiques',
     db.Column('fantasy_team_id', db.Integer, db.ForeignKey('fantasy_team.id'), primary_key=True),
     db.Column('rider_id', db.Integer, db.ForeignKey('rider.id'), primary_key=True),
     db.Column('is_active', db.Boolean, default=True),
-    extend_existing=True  # Add this to avoid table redefinition errors
+    extend_existing=True
 )
 
 bench_gc_riders = db.Table('bench_gc_riders',
     db.Column('fantasy_team_id', db.Integer, db.ForeignKey('fantasy_team.id'), primary_key=True),
     db.Column('rider_id', db.Integer, db.ForeignKey('rider.id'), primary_key=True),
     db.Column('is_active', db.Boolean, default=False),
-    extend_existing=True  # Add this to avoid table redefinition errors
+    extend_existing=True
 )
 
 bench_domestiques = db.Table('bench_domestiques',
     db.Column('fantasy_team_id', db.Integer, db.ForeignKey('fantasy_team.id'), primary_key=True),
     db.Column('rider_id', db.Integer, db.ForeignKey('rider.id'), primary_key=True),
     db.Column('is_active', db.Boolean, default=False),
-    extend_existing=True  # Add this to avoid table redefinition errors
+    extend_existing=True
 )

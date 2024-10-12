@@ -8,7 +8,9 @@ export const registerUser = createAsyncThunk(
       const response = await api.post("/auth/register", userData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(
+        error.response?.data || { message: "Registration failed" }
+      );
     }
   }
 );
@@ -20,7 +22,9 @@ export const loginUser = createAsyncThunk(
       const response = await api.post("/auth/login", credentials);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(
+        error.response?.data || { message: "Login failed" }
+      );
     }
   }
 );
@@ -32,7 +36,9 @@ export const logoutUser = createAsyncThunk(
       const response = await api.post("/auth/logout");
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(
+        error.response?.data || { message: "Logout failed" }
+      );
     }
   }
 );
@@ -44,7 +50,13 @@ export const fetchUser = createAsyncThunk(
       const response = await api.get("/auth/user");
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      if (error.response && error.response.status === 401) {
+        // Not authenticated, but not an error
+        return rejectWithValue({ message: "Not authenticated" });
+      }
+      return rejectWithValue(
+        error.response?.data || { message: "Failed to fetch user" }
+      );
     }
   }
 );
@@ -66,8 +78,9 @@ const authSlice = createSlice({
     builder
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(registerUser.fulfilled, (state) => {
         state.loading = false;
         state.error = null;
       })
@@ -77,6 +90,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
@@ -91,14 +105,26 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.isAuthenticated = false;
+        state.error = null;
+      })
+      .addCase(fetchUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
-        state.user = action.payload;
+        state.loading = false;
         state.isAuthenticated = true;
+        state.user = action.payload;
+        state.error = null;
       })
-      .addCase(fetchUser.rejected, (state) => {
-        state.user = null;
+      .addCase(fetchUser.rejected, (state, action) => {
+        state.loading = false;
         state.isAuthenticated = false;
+        state.user = null;
+        // Only set error if it's not a "Not authenticated" message
+        if (action.payload.message !== "Not authenticated") {
+          state.error = action.payload;
+        }
       });
   },
 });

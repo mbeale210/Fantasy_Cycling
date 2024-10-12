@@ -1,9 +1,8 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../store/slices/authSlice";
-import Navigation from "./Navigation";
 
-const Header = () => {
+const Header = ({ children }) => {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
@@ -13,7 +12,7 @@ const Header = () => {
 
   return (
     <header>
-      <Navigation />
+      {children}
       {isAuthenticated && user && (
         <div>
           <span>Welcome, {user.username}</span>

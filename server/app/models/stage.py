@@ -2,7 +2,7 @@ from app import db
 
 class Stage(db.Model):
     __tablename__ = 'stage'
-    __table_args__ = {'extend_existing': True}  # Add this to avoid table redefinition errors
+    __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.Integer, nullable=False)
@@ -16,7 +16,7 @@ class Stage(db.Model):
 
 class StageResult(db.Model):
     __tablename__ = 'stage_result'
-    __table_args__ = {'extend_existing': True}  # Add this to avoid table redefinition errors
+    __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
     rider_id = db.Column(db.Integer, db.ForeignKey('rider.id'), nullable=False)
@@ -27,3 +27,4 @@ class StageResult(db.Model):
 
     def __repr__(self):
         return f'<StageResult {self.id}>'
+    

@@ -9,7 +9,7 @@ const Home = () => {
     <div className="home">
       <h1>Welcome to Fantasy Tour de France</h1>
       <p>Create your dream cycling team and compete with others!</p>
-      {!isAuthenticated && (
+      {!isAuthenticated ? (
         <div>
           <Link to="/register">
             <button>Sign Up</button>
@@ -18,8 +18,7 @@ const Home = () => {
             <button>Login</button>
           </Link>
         </div>
-      )}
-      {isAuthenticated && (
+      ) : (
         <Link to="/dashboard">
           <button>Go to Dashboard</button>
         </Link>

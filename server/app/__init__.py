@@ -19,10 +19,12 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # CORS configuration
+    CORS(app, supports_credentials=True, origins=app.config['CORS_ORIGINS'], allow_headers=['Content-Type', 'Authorization'])
+
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    CORS(app)
 
     # Import models
     from .models import User, Rider, FantasyTeam, Stage, StageResult, League
