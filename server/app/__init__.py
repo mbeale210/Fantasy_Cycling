@@ -1,44 +1,33 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
-from flask_cors import CORS
-import sys
-import os
-
-# Add the project root directory to Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
+from flask_cors import CORS  # Ensure flask-cors is imported
 
 from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
-login_manager = LoginManager()
+jwt = JWTManager()
+bcrypt = Bcrypt()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # CORS configuration
-    CORS(app, supports_credentials=True, origins=app.config['CORS_ORIGINS'], allow_headers=['Content-Type', 'Authorization'])
+    # CORS Configuration: Allow requests from the client side (localhost:3000)
+    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
     db.init_app(app)
     migrate.init_app(app, db)
-    login_manager.init_app(app)
+    jwt.init_app(app)
 
-    # Import models
-    from .models import User, Rider, FantasyTeam, Stage, StageResult, League
-
-    # Import and register blueprints
-    from .routes import auth, teams, riders, stages, leagues
-    app.register_blueprint(auth.bp)
-    app.register_blueprint(teams.bp)
-    app.register_blueprint(riders.bp)
-    app.register_blueprint(stages.bp)
-    app.register_blueprint(leagues.bp)
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+    from app.routes import auth_bp, teams_bp, riders_bp, stages_bp, leagues_bp
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(teams_bp)
+    app.register_blueprint(riders_bp)
+    app.register_blueprint(stages_bp)
+    app.register_blueprint(leagues_bp)
 
     return app

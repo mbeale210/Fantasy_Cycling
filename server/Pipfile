@@ -1,0 +1,27 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+flake8 = "*"
+
+[packages]
+flask = "==2.3.3"
+flask-sqlalchemy = "==3.0.5"
+flask-migrate = "==4.0.5"
+flask-jwt-extended = "==4.5.2"
+flask-restful = "==0.3.10"
+flask-bcrypt = "*"
+sqlalchemy = "==2.0.35"
+werkzeug = "==2.3.7"
+python-dotenv = "==1.0.1"
+requests = "==2.31.0"
+beautifulsoup4 = "==4.12.2"
+gunicorn = "==21.2.0"
+flask-cors = "*"
+
+
+[requires]
+python_version = "3.10"

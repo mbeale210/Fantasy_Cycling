@@ -7,9 +7,9 @@ const RiderList = ({ riders, onDraft }) => {
         <tr>
           <th>Name</th>
           <th>Team</th>
+          <th>Points</th>
           <th>Type</th>
-          <th>Career Points</th>
-          <th>Action</th>
+          {onDraft && <th>Action</th>}
         </tr>
       </thead>
       <tbody>
@@ -17,11 +17,13 @@ const RiderList = ({ riders, onDraft }) => {
           <tr key={rider.id}>
             <td>{rider.name}</td>
             <td>{rider.team}</td>
+            <td>{rider.points}</td>
             <td>{rider.is_gc ? "GC" : "Domestique"}</td>
-            <td>{rider.career_points}</td>
-            <td>
-              <button onClick={() => onDraft(rider)}>Draft</button>
-            </td>
+            {onDraft && (
+              <td>
+                <button onClick={() => onDraft(rider)}>Draft</button>
+              </td>
+            )}
           </tr>
         ))}
       </tbody>

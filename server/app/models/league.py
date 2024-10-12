@@ -1,12 +1,12 @@
 from app import db
 
-class League(db.Model):
-    __tablename__ = 'league'
-    __table_args__ = {'extend_existing': True}  # Add this to avoid table redefinition errors
+user_league = db.Table('user_league',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('league_id', db.Integer, db.ForeignKey('league.id'), primary_key=True)
+)
 
+class League(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    users = db.relationship('User', secondary='user_league', back_populates='leagues')
-
-    def __repr__(self):
-        return f'<League {self.name}>'
+    teams = db.relationship('FantasyTeam', backref='league', lazy=True)
+    users = db.relationship('User', secondary=user_league, back_populates='leagues')

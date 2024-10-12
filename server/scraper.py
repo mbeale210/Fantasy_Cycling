@@ -29,14 +29,8 @@ def scrape_procyclingstats_rankings():
                         })
                     except (ValueError, AttributeError, IndexError) as e:
                         print(f"Error processing row: {e}")
-                        print(f"Row content: {[col.text.strip() for col in cols]}")
                         continue
 
-        if not riders:
-            print("No riders found on the page. The website structure might have changed.")
-        else:
-            print(f"Successfully scraped {len(riders)} riders.")
-        
         return riders
 
     except requests.RequestException as e:
@@ -57,15 +51,8 @@ if __name__ == "__main__":
     print("Testing scraper...")
     scraped_riders = scrape_procyclingstats_rankings()
     if scraped_riders:
-        print("First 5 riders:")
-        for rider in scraped_riders[:5]:
-            print(rider)
-        print(f"Total riders scraped: {len(scraped_riders)}")
-        print(f"Last rider: {scraped_riders[-1]}")
+        print(f"Scraped {len(scraped_riders)} riders")
     else:
         print("Scraping failed. Generating mock data.")
         mock_riders = generate_mock_riders()
-        print(f"Generated {len(mock_riders)} mock riders.")
-        print("First 5 mock riders:")
-        for rider in mock_riders[:5]:
-            print(rider)
+        print(f"Generated {len(mock_riders)} mock riders")

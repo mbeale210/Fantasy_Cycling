@@ -1,11 +1,11 @@
-from flask import Blueprint, request, jsonify
-from app.models import Stage, StageResult, Rider, db
-from flask_login import login_required
+from flask import request, jsonify
+from flask_jwt_extended import jwt_required
+from app.models import Stage, StageResult
+from app import db
+from . import stages_bp
 
-bp = Blueprint('stages', __name__, url_prefix='/stages')
-
-@bp.route('', methods=['GET'])
-@login_required
+@stages_bp.route('', methods=['GET'])
+# Removed @jwt_required() to make this public
 def get_stages():
     stages = Stage.query.all()
     return jsonify([{
@@ -16,8 +16,8 @@ def get_stages():
         "is_rest_day": stage.is_rest_day
     } for stage in stages]), 200
 
-@bp.route('/<int:stage_id>/results', methods=['GET'])
-@login_required
+@stages_bp.route('/<int:stage_id>/results', methods=['GET'])
+@jwt_required()
 def get_stage_results(stage_id):
     results = StageResult.query.filter_by(stage_id=stage_id).all()
     return jsonify([{
@@ -29,10 +29,10 @@ def get_stage_results(stage_id):
         "mountain_pts": result.mountain_pts
     } for result in results]), 200
 
-@bp.route('/<int:stage_id>/results', methods=['POST'])
-@login_required
+@stages_bp.route('/<int:stage_id>/results', methods=['POST'])
+@jwt_required()
 def add_stage_result(stage_id):
-    data = request.json
+    data = request.get_json()
     new_result = StageResult(
         rider_id=data['rider_id'],
         stage_id=stage_id,

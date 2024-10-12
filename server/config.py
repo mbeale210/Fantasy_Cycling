@@ -18,4 +18,4 @@ class Config:
 
     # CORS configuration
     CORS_SUPPORTS_CREDENTIALS = True
-    CORS_ORIGINS = ['http://localhost:3000']  # Add your frontend URL here
+    CORS_ORIGINS = ['http://localhost:3000']  # Ensure this matches your frontend

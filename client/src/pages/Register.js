@@ -1,35 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser, clearError } from "../store/slices/authSlice";
+import api from "../services/api";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { error, loading, isAuthenticated } = useSelector(
-    (state) => state.auth
-  );
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
-    return () => {
-      dispatch(clearError());
-    };
-  }, [isAuthenticated, navigate, dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(registerUser({ username, email, password }));
+    try {
+      await api.post("/auth/register", { username, email, password });
+      navigate("/login");
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed");
+    }
   };
 
   return (
     <div className="register">
       <h2>Register</h2>
+      {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="username">Username:</label>
@@ -61,11 +54,8 @@ const Register = () => {
             required
           />
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Registering..." : "Register"}
-        </button>
+        <button type="submit">Register</button>
       </form>
-      {error && <p className="error">{error.message}</p>}
     </div>
   );
 };

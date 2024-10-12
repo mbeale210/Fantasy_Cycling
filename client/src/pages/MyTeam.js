@@ -1,34 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchUserTeams, updateRoster } from "../store/slices/teamSlice";
-import GCRiders from "../components/GCRiders";
-import Domestiques from "../components/Domestiques";
 
 const MyTeam = () => {
   const { teamId } = useParams();
   const dispatch = useDispatch();
-  const { teams } = useSelector((state) => state.teams);
-  const [team, setTeam] = useState(null);
+  const { teams, loading } = useSelector((state) => state.teams);
+  const team = teams.find((t) => t.id.toString() === teamId);
 
   useEffect(() => {
     dispatch(fetchUserTeams());
   }, [dispatch]);
 
-  useEffect(() => {
-    const currentTeam = teams.find((t) => t.id.toString() === teamId);
-    if (currentTeam) {
-      setTeam(currentTeam);
-    }
-  }, [teams, teamId]);
-
   const handleRosterUpdate = (updatedRoster) => {
     dispatch(updateRoster({ teamId: team.id, rosterData: updatedRoster }));
   };
 
-  if (!team) {
-    return <div>Loading team...</div>;
-  }
+  if (loading) return <div>Loading team...</div>;
+  if (!team) return <div>Team not found</div>;
 
   return (
     <div className="my-team">
@@ -36,17 +26,37 @@ const MyTeam = () => {
       <p>Total Points: {team.sprint_pts + team.mountain_pts}</p>
       <p>Trades Left: {team.trades_left}</p>
 
-      <GCRiders
-        activeRider={team.active_gc_rider}
-        benchRiders={team.bench_gc_riders}
-        onUpdate={handleRosterUpdate}
-      />
+      <h2>GC Riders</h2>
+      <div>
+        <h3>Active GC Rider</h3>
+        {team.active_gc_rider ? (
+          <p>{team.active_gc_rider.name}</p>
+        ) : (
+          <p>No active GC rider</p>
+        )}
+      </div>
+      <div>
+        <h3>Bench GC Riders</h3>
+        {team.bench_gc_riders.map((rider) => (
+          <p key={rider.id}>{rider.name}</p>
+        ))}
+      </div>
 
-      <Domestiques
-        activeRiders={team.active_domestiques}
-        benchRiders={team.bench_domestiques}
-        onUpdate={handleRosterUpdate}
-      />
+      <h2>Domestiques</h2>
+      <div>
+        <h3>Active Domestiques</h3>
+        {team.active_domestiques.map((rider) => (
+          <p key={rider.id}>{rider.name}</p>
+        ))}
+      </div>
+      <div>
+        <h3>Bench Domestiques</h3>
+        {team.bench_domestiques.map((rider) => (
+          <p key={rider.id}>{rider.name}</p>
+        ))}
+      </div>
+
+      {/* Add UI elements for updating roster */}
     </div>
   );
 };

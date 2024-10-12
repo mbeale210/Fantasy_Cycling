@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../services/api";
 
+// Register user
 export const registerUser = createAsyncThunk(
   "auth/register",
   async (userData, { rejectWithValue }) => {
@@ -15,6 +16,7 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+// Login user
 export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
@@ -29,6 +31,7 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// Logout user
 export const logoutUser = createAsyncThunk(
   "auth/logout",
   async (_, { rejectWithValue }) => {
@@ -43,6 +46,7 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+// Fetch user
 export const fetchUser = createAsyncThunk(
   "auth/fetchUser",
   async (_, { rejectWithValue }) => {
@@ -51,7 +55,6 @@ export const fetchUser = createAsyncThunk(
       return response.data;
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        // Not authenticated, but not an error
         return rejectWithValue({ message: "Not authenticated" });
       }
       return rejectWithValue(
@@ -121,7 +124,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
-        // Only set error if it's not a "Not authenticated" message
         if (action.payload.message !== "Not authenticated") {
           state.error = action.payload;
         }

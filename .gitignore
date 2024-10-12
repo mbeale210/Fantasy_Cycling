@@ -1,26 +1,56 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Ignore Python related files and folders
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+*.env
+*.log
+*.sqlite3
+*.db
+instance/
+venv/
+Pipfile.lock
+env/
+.idea/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Ignore Flask migration files
+migrations/
 
-# testing
-/coverage
+# Ignore virtual environment files
+.venv/
 
-# production
-/build
+# Ignore compiled and cache files
+*.pyc
+*.pyo
+*.pyd
+*.pkl
 
-# misc
+# Ignore log files
+*.log
+
+# Ignore React/Node.js related files
+node_modules/
+npm-debug.log
+yarn-error.log
+.env
+*.env.local
+*.env.development
+*.env.production
+*.env.test
+.cache/
+
+# Ignore build files
+build/
+dist/
+coverage/
+
+# Ignore dependencies from package managers
+package-lock.json
+yarn.lock
+
+# Ignore OS-specific files
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+Thumbs.db
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-echo "client/.env" >> .gitignore
-echo "client/.flaskenv" >> .gitignore
+# Ignore VSCode settings
+.vscode/

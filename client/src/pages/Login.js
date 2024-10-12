@@ -1,34 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser, clearError } from "../store/slices/authSlice";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { error, loading, isAuthenticated } = useSelector(
-    (state) => state.auth
-  );
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
-    return () => {
-      dispatch(clearError());
-    };
-  }, [isAuthenticated, navigate, dispatch]);
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(loginUser({ username, password }));
+    try {
+      await login({ username, password });
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Invalid username or password");
+    }
   };
 
   return (
-    <div className="login-page">
-      <h1>Login</h1>
+    <div className="login">
+      <h2>Login</h2>
+      {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="username">Username:</label>
@@ -50,11 +44,8 @@ const Login = () => {
             required
           />
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
+        <button type="submit">Login</button>
       </form>
-      {error && <p className="error">{error.message}</p>}
     </div>
   );
 };

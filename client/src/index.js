@@ -5,10 +5,7 @@ import { store } from "./store";
 import App from "./App";
 import "./index.css";
 
-// Initialize the root
-const root = ReactDOM.createRoot(document.getElementById('root'));
-
-// Render the App component wrapped in the Redux Provider
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>

@@ -36,55 +36,35 @@ const OpenRiders = () => {
   const handleDraft = (rider) => {
     // Assuming the user has only one team for simplicity
     const userTeam = teams[0];
+
     if (userTeam && userTeam.trades_left > 0) {
-      const totalRiders = [
-        userTeam.active_gc_rider,
-        ...userTeam.active_domestiques,
-        ...userTeam.bench_gc_riders,
-        ...userTeam.bench_domestiques,
-      ].length;
+      let newRoster = {};
 
-      if (totalRiders < 9) {
-        let newRoster = {
-          active_gc_rider: userTeam.active_gc_rider
-            ? [userTeam.active_gc_rider.id]
-            : [],
-          active_domestiques: userTeam.active_domestiques.map((r) => r.id),
-          bench_gc_riders: userTeam.bench_gc_riders.map((r) => r.id),
-          bench_domestiques: userTeam.bench_domestiques.map((r) => r.id),
+      // Check the role of the drafted rider and add them to the correct spot
+      if (rider.role === "gc") {
+        // Draft as GC rider
+        newRoster = {
+          ...userTeam, // Preserve the rest of the team's structure
+          active_gc_rider: rider, // Replace current GC rider with drafted rider
         };
-
-        if (rider.is_gc) {
-          if (newRoster.active_gc_rider.length === 0) {
-            newRoster.active_gc_rider = [rider.id];
-          } else if (newRoster.bench_gc_riders.length < 2) {
-            newRoster.bench_gc_riders.push(rider.id);
-          } else {
-            alert("You can't add more GC riders to your team.");
-            return;
-          }
-        } else {
-          if (newRoster.active_domestiques.length < 4) {
-            newRoster.active_domestiques.push(rider.id);
-          } else if (newRoster.bench_domestiques.length < 2) {
-            newRoster.bench_domestiques.push(rider.id);
-          } else {
-            alert("You can't add more domestique riders to your team.");
-            return;
-          }
-        }
-
-        dispatch(
-          updateRoster({
-            teamId: userTeam.id,
-            rosterData: newRoster,
-          })
-        );
+      } else if (rider.role === "domestique") {
+        // Draft as Domestique
+        newRoster = {
+          ...userTeam, // Preserve the rest of the team's structure
+          active_domestiques: [...userTeam.active_domestiques, rider], // Add to active domestiques
+        };
       } else {
-        alert(
-          "Your team is full. You need to remove a rider before adding a new one."
-        );
+        alert("Rider role is not supported for drafting.");
+        return;
       }
+
+      // Dispatch the updated roster
+      dispatch(
+        updateRoster({
+          teamId: userTeam.id,
+          rosterData: newRoster,
+        })
+      );
     } else {
       alert("You don't have any trades left or you don't have a team yet.");
     }
