@@ -37,6 +37,18 @@ export const updateRoster = createAsyncThunk(
   }
 );
 
+export const addRiderToTeam = createAsyncThunk(
+  "teams/addRiderToTeam",
+  async ({ teamId, riderId }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/teams/${teamId}/riders`, { riderId });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const teamSlice = createSlice({
   name: "teams",
   initialState: {
@@ -63,6 +75,14 @@ const teamSlice = createSlice({
         state.teams.push(action.payload);
       })
       .addCase(updateRoster.fulfilled, (state, action) => {
+        const index = state.teams.findIndex(
+          (team) => team.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.teams[index] = action.payload;
+        }
+      })
+      .addCase(addRiderToTeam.fulfilled, (state, action) => {
         const index = state.teams.findIndex(
           (team) => team.id === action.payload.id
         );

@@ -14,4 +14,4 @@ class FantasyTeam(db.Model):
     trades_left = db.Column(db.Integer, default=30)
     sprint_pts = db.Column(db.Integer, default=0)
     mountain_pts = db.Column(db.Integer, default=0)
-    riders = db.relationship('Rider', secondary=rider_fantasy_team, back_populates='fantasy_teams')
+    riders = db.relationship('Rider', secondary=rider_fantasy_team, back_populates='fantasy_teams', lazy='subquery')

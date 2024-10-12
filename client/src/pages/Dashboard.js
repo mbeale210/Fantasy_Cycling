@@ -8,13 +8,17 @@ import TeamSummary from "../components/TeamSummary";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { teams } = useSelector((state) => state.teams);
-  const { stages } = useSelector((state) => state.stages);
+  const { teams, loading: teamsLoading } = useSelector((state) => state.teams);
+  const { stages, loading: stagesLoading } = useSelector(
+    (state) => state.stages
+  );
 
   useEffect(() => {
     dispatch(fetchUserTeams());
     dispatch(fetchStages());
   }, [dispatch]);
+
+  if (teamsLoading || stagesLoading) return <div>Loading...</div>;
 
   return (
     <div className="dashboard">

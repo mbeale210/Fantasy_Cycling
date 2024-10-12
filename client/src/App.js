@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+// import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -14,6 +15,8 @@ import OpenRiders from "./pages/OpenRiders";
 import TeamStandings from "./pages/TeamStandings";
 
 function App() {
+  //   const { user } = useSelector((state) => state.auth);
+
   return (
     <AuthProvider>
       <Router>

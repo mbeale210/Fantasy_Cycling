@@ -1,28 +1,30 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "../store/slices/authSlice";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error: authError } = useSelector((state) => state.auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/auth/register", { username, email, password });
+      await dispatch(registerUser({ username, email, password })).unwrap();
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      // Error is handled in the Redux store
     }
   };
 
   return (
     <div className="register">
       <h2>Register</h2>
-      {error && <p className="error">{error}</p>}
+      {authError && <p className="error">{authError.message}</p>}
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="username">Username:</label>
@@ -54,7 +56,9 @@ const Register = () => {
             required
           />
         </div>
-        <button type="submit">Register</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
+        </button>
       </form>
     </div>
   );

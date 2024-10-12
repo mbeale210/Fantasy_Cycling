@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../../services/api";
+import api from "../../services/api"; // Ensure api is imported
 
+// Thunk to fetch all riders
 export const fetchRiders = createAsyncThunk(
   "riders/fetchRiders",
   async (_, { rejectWithValue }) => {
@@ -13,11 +14,12 @@ export const fetchRiders = createAsyncThunk(
   }
 );
 
-export const fetchRiderDetails = createAsyncThunk(
-  "riders/fetchRiderDetails",
-  async (riderId, { rejectWithValue }) => {
+// Thunk to fetch open riders (riders not assigned to any team)
+export const fetchOpenRiders = createAsyncThunk(
+  "riders/fetchOpenRiders",
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/riders/${riderId}`);
+      const response = await api.get("/riders/open"); // Using the new API endpoint
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -52,15 +54,15 @@ const riderSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchRiderDetails.pending, (state) => {
+      .addCase(fetchOpenRiders.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchRiderDetails.fulfilled, (state, action) => {
+      .addCase(fetchOpenRiders.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedRider = action.payload;
+        state.riders = action.payload;
         state.error = null;
       })
-      .addCase(fetchRiderDetails.rejected, (state, action) => {
+      .addCase(fetchOpenRiders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
