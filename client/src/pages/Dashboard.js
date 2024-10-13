@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchUserTeams, fetchTeamPoints } from "../store/slices/teamSlice";
@@ -17,10 +17,6 @@ const Dashboard = () => {
     (state) => state.stages
   );
 
-  const [totalSprintPoints, setTotalSprintPoints] = useState(0);
-  const [totalMountainPoints, setTotalMountainPoints] = useState(0);
-  const [totalPoints, setTotalPoints] = useState(0);
-
   useEffect(() => {
     dispatch(fetchUserTeams());
     dispatch(fetchStages());
@@ -31,16 +27,6 @@ const Dashboard = () => {
       dispatch(fetchTeamPoints());
     }
   }, [teams, dispatch]);
-
-  useEffect(() => {
-    if (teamPoints) {
-      setTotalSprintPoints(teamPoints.totalSprintPoints);
-      setTotalMountainPoints(teamPoints.totalMountainPoints);
-      setTotalPoints(
-        teamPoints.totalSprintPoints + teamPoints.totalMountainPoints
-      );
-    }
-  }, [teamPoints]);
 
   if (teamsLoading || stagesLoading) return <div>Loading...</div>;
 
@@ -60,26 +46,6 @@ const Dashboard = () => {
             <Link to="/create-team">Create a team</Link>
           </p>
         )}
-      </section>
-
-      <section className="team-points">
-        <h2>Team Points</h2>
-        <table>
-          <tbody>
-            <tr>
-              <td>Sprint Points (GC Riders):</td>
-              <td>{totalSprintPoints}</td>
-            </tr>
-            <tr>
-              <td>Mountain Points (GC Riders):</td>
-              <td>{totalMountainPoints}</td>
-            </tr>
-            <tr>
-              <td>Total Points:</td>
-              <td>{totalPoints}</td>
-            </tr>
-          </tbody>
-        </table>
       </section>
 
       <section className="upcoming-stages">
