@@ -57,11 +57,16 @@ const OpenRiders = () => {
       <h1>Available Riders</h1>
       <input
         type="text"
-        placeholder="Search riders or teams"
+        placeholder="Search riders"
         value={searchTerm}
         onChange={handleSearch}
       />
-      <RiderList riders={displayRiders} onDraft={handleDraft} />
+      <RiderList
+        riders={displayRiders}
+        onDraft={handleDraft}
+        showTeam={false}
+      />{" "}
+      {/* showTeam is set to false */}
     </div>
   );
 };

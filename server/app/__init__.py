@@ -1,7 +1,14 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import (
+    JWTManager,
+    create_access_token,
+    create_refresh_token,
+    jwt_required,
+    get_jwt_identity,
+    unset_jwt_cookies
+)
 from flask_cors import CORS
 from config import Config
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -59,6 +66,13 @@ def create_app(config_class=Config):
                 }
             }), 200
         return jsonify({'message': 'Invalid username or password'}), 401
+
+    @app.route('/auth/logout', methods=['POST'])
+    @jwt_required()
+    def logout():
+        response = jsonify({"message": "Logged out successfully"})
+        unset_jwt_cookies(response)
+        return response, 200
 
     @app.route('/auth/refresh', methods=['POST'])
     @jwt_required(refresh=True)

@@ -1,13 +1,14 @@
 import React from "react";
 
-const RiderList = ({ riders, showRank, onDraft }) => {
+const RiderList = ({ riders, showRank, onDraft, showTeam = true }) => {
+  // Added showTeam prop with a default value of true
   return (
     <table>
       <thead>
         <tr>
           {showRank && <th>Rank</th>}
           <th>Name</th>
-          <th>Team</th>
+          {showTeam && <th>Team</th>} {/* Conditionally render Team column */}
           <th>Points</th>
           <th>Type</th>
           {onDraft && <th>Action</th>}
@@ -18,7 +19,8 @@ const RiderList = ({ riders, showRank, onDraft }) => {
           <tr key={rider.id}>
             {showRank && <td>{index + 1}</td>} {/* Add the ranking number */}
             <td>{rider.name}</td>
-            <td>{rider.team}</td> {/* Team name or Open Rider */}
+            {showTeam && <td>{rider.team}</td>}{" "}
+            {/* Conditionally render Team cell */}
             <td>{rider.career_points || 0}</td> {/* Show career points or 0 */}
             <td>{rider.is_gc ? "GC" : "Domestique"}</td>
             {onDraft && (

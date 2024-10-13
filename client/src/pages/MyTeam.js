@@ -17,6 +17,7 @@ const MyTeam = () => {
   const team = teams.find((t) => t.id.toString() === teamId);
 
   const [newTeamName, setNewTeamName] = useState(team ? team.name : "");
+  const [isEditing, setIsEditing] = useState(false); // Track whether team name is being edited
   const [message, setMessage] = useState("");
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
@@ -36,6 +37,7 @@ const MyTeam = () => {
 
   const handleUpdateTeamName = () => {
     dispatch(updateTeamName({ teamId: team.id, newName: newTeamName }));
+    setIsEditing(false); // Close editing form after submission
   };
 
   const handleRemoveRider = (riderId) => {
@@ -77,18 +79,33 @@ const MyTeam = () => {
   return (
     <div className="my-team">
       {message && <div className="message">{message}</div>}
-      <h1>
-        <input
-          type="text"
-          value={newTeamName}
-          onChange={handleTeamNameChange}
-        />
-        <button onClick={handleUpdateTeamName}>Update Team Name</button>
+
+      {/* Team Name Section */}
+      <h1 style={{ fontSize: "1.5em", fontWeight: "bold" }}>
+        {!isEditing ? (
+          <>
+            {newTeamName}{" "}
+            <button onClick={() => setIsEditing(true)}>Change Team Name</button>
+          </>
+        ) : (
+          <>
+            <input
+              type="text"
+              value={newTeamName}
+              onChange={handleTeamNameChange}
+              style={{ fontSize: "1.5em", fontWeight: "bold" }}
+            />
+            <div>
+              <button onClick={handleUpdateTeamName}>Update Team Name</button>
+              <button onClick={() => setIsEditing(false)}>Cancel</button>
+            </div>
+          </>
+        )}
       </h1>
       <p>Total Points: {team.sprint_pts + team.mountain_pts}</p>
 
       {/* GC Riders */}
-      <h2>GC Riders</h2>
+      <h2 style={{ fontSize: "1.45em" }}>GC Riders</h2>
       <div>
         {gcRiders.length > 0 ? (
           <table>
@@ -124,7 +141,7 @@ const MyTeam = () => {
       </div>
 
       {/* Domestiques */}
-      <h2>Domestiques</h2>
+      <h2 style={{ fontSize: "1.45em" }}>Domestiques</h2>
       <div>
         {domestiques.length > 0 ? (
           <table>
@@ -159,6 +176,7 @@ const MyTeam = () => {
         )}
       </div>
 
+      {/* Delete Team Section */}
       {showDeleteConfirmation ? (
         <div className="delete-confirmation">
           <p>Are you sure you want to delete this team?</p>

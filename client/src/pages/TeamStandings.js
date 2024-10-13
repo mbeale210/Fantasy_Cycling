@@ -5,7 +5,6 @@ import {
   fetchStages,
   fetchSummativeStageResults,
 } from "../store/slices/stageSlice";
-import TeamSummary from "../components/TeamSummary";
 
 // Helper function to format time
 const formatTime = (totalSeconds) => {
@@ -19,7 +18,7 @@ const formatTime = (totalSeconds) => {
 
 const TeamStandings = () => {
   const dispatch = useDispatch();
-  const { teams, loading: teamsLoading } = useSelector((state) => state.teams);
+  const { loading: teamsLoading } = useSelector((state) => state.teams); // Removed 'teams'
   const {
     stages,
     currentSummativeStageResults,
@@ -77,6 +76,7 @@ const TeamStandings = () => {
               <th>Total Time</th>
               <th>Total Sprint Points</th>
               <th>Total Mountain Points</th>
+              <th>Rider Name</th>
             </tr>
           </thead>
           <tbody>
@@ -87,6 +87,7 @@ const TeamStandings = () => {
                 <td>{formatTime(result.total_time)}</td>
                 <td>{result.total_sprint_pts}</td>
                 <td>{result.total_mountain_pts}</td>
+                <td>{result.rider_name}</td>
               </tr>
             ))}
           </tbody>
@@ -94,15 +95,6 @@ const TeamStandings = () => {
       ) : (
         <p>Select a stage to view GC riders on teams</p>
       )}
-
-      {/* Current team standings */}
-      <h2>Current Team Standings</h2>
-      {teams.map((team, index) => (
-        <div key={team.id}>
-          <h2>Rank: {index + 1}</h2>
-          <TeamSummary team={team} />
-        </div>
-      ))}
     </div>
   );
 };
