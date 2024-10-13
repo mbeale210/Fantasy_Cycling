@@ -1,3 +1,4 @@
+import re  # Add this import for regex validation
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -38,6 +39,14 @@ def create_app(config_class=Config):
     @app.route('/auth/register', methods=['POST'])
     def register():
         data = request.get_json()
+        
+        # Server-side validation
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", data['email']):
+            return jsonify({"message": "Invalid email format"}), 400
+        
+        if len(data['password']) < 6 or not re.search(r"\d", data['password']):
+            return jsonify({"message": "Password must be at least 6 characters long and contain at least one number"}), 400
+
         if User.query.filter_by(username=data['username']).first():
             return jsonify({"message": "Username already exists"}), 400
         if User.query.filter_by(email=data['email']).first():
@@ -107,7 +116,7 @@ def create_app(config_class=Config):
             "sprint_pts": rider.sprint_pts,
             "mountain_pts": rider.mountain_pts,
             "is_gc": rider.is_gc,
-            "team": rider.fantasy_teams[0].name if rider.fantasy_teams else "Open Rider"  # Get team name or "Open Rider"
+            "team": rider.fantasy_teams[0].name if rider.fantasy_teams else "Open Rider"
         } for rider in riders]), 200
 
     # Open Riders Route - Fetch only unassigned riders
@@ -136,12 +145,11 @@ def create_app(config_class=Config):
             data = request.get_json()
 
             # Automatically assign the first available league for now
-            default_league = League.query.first()  # Assuming you only have one league for now
+            default_league = League.query.first()
 
             if not default_league:
-                return jsonify({"message": "No leagues found"}), 400  # Return error if no league exists
+                return jsonify({"message": "No leagues found"}), 400
 
-            # Use the default_league.id if the league_id is not provided
             new_team = FantasyTeam(name=data['name'], user_id=user_id, league_id=default_league.id)
             db.session.add(new_team)
             db.session.commit()
@@ -157,9 +165,32 @@ def create_app(config_class=Config):
                 "riders": [{
                     "id": rider.id,
                     "name": rider.name,
-                    "is_gc": rider.is_gc,  # Ensure is_gc is included
+                    "is_gc": rider.is_gc
                 } for rider in team.riders]
             } for team in teams]), 200
+
+    # Route to calculate team points for GC riders
+    @app.route('/teams/points', methods=['GET'])
+    @jwt_required()
+    def get_team_points():
+        user_id = get_jwt_identity()
+        teams = FantasyTeam.query.filter_by(user_id=user_id).all()
+
+        total_sprint_points = 0
+        total_mountain_points = 0
+
+        for team in teams:
+            for rider in team.riders:
+                if rider.is_gc:
+                    sprint_points = db.session.query(db.func.sum(StageResult.sprint_pts)).filter_by(rider_id=rider.id).scalar() or 0
+                    mountain_points = db.session.query(db.func.sum(StageResult.mountain_pts)).filter_by(rider_id=rider.id).scalar() or 0
+                    total_sprint_points += sprint_points
+                    total_mountain_points += mountain_points
+
+        return jsonify({
+            "totalSprintPoints": total_sprint_points,
+            "totalMountainPoints": total_mountain_points
+        }), 200
 
     # PUT route to update the team's roster
     @app.route('/teams/<int:team_id>/roster', methods=['PUT', 'OPTIONS'])
@@ -218,7 +249,6 @@ def create_app(config_class=Config):
     @jwt_required()
     def delete_team(team_id):
         if request.method == 'OPTIONS':
-            # CORS preflight handling
             return jsonify({'message': 'CORS preflight successful'}), 200
 
         team = FantasyTeam.query.get_or_404(team_id)
@@ -288,7 +318,7 @@ def create_app(config_class=Config):
             "time": result.time,
             "sprint_pts": result.sprint_pts,
             "mountain_pts": result.mountain_pts,
-            "is_gc": result.rider.is_gc  # Ensure GC status is passed
+            "is_gc": result.rider.is_gc
         } for result in results]), 200
 
     # Summative Stage Results Route

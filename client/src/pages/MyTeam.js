@@ -7,19 +7,23 @@ import {
   removeRiderFromTeam,
   swapRiderRole,
   deleteTeam,
+  fetchTeamPoints,
 } from "../store/slices/teamSlice";
 
 const MyTeam = () => {
   const { teamId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { teams, loading } = useSelector((state) => state.teams);
+  const { teams, loading, teamPoints } = useSelector((state) => state.teams);
   const team = teams.find((t) => t.id.toString() === teamId);
 
   const [newTeamName, setNewTeamName] = useState(team ? team.name : "");
   const [isEditing, setIsEditing] = useState(false); // Track whether team name is being edited
   const [message, setMessage] = useState("");
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [totalSprintPoints, setTotalSprintPoints] = useState(0);
+  const [totalMountainPoints, setTotalMountainPoints] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0);
 
   useEffect(() => {
     dispatch(fetchUserTeams());
@@ -30,6 +34,22 @@ const MyTeam = () => {
       navigate(`/my-team/${teams[0].id}`);
     }
   }, [teams, navigate, teamId]);
+
+  useEffect(() => {
+    if (team) {
+      dispatch(fetchTeamPoints());
+    }
+  }, [team, dispatch]);
+
+  useEffect(() => {
+    if (teamPoints) {
+      setTotalSprintPoints(teamPoints.totalSprintPoints);
+      setTotalMountainPoints(teamPoints.totalMountainPoints);
+      setTotalPoints(
+        teamPoints.totalSprintPoints + teamPoints.totalMountainPoints
+      );
+    }
+  }, [teamPoints]);
 
   const handleTeamNameChange = (e) => {
     setNewTeamName(e.target.value);
@@ -107,7 +127,27 @@ const MyTeam = () => {
           </>
         )}
       </h1>
-      <p>Total Points: {team.sprint_pts + team.mountain_pts}</p>
+
+      {/* Team Points Section */}
+      <section className="team-points">
+        <h2>Team Points</h2>
+        <table>
+          <tbody>
+            <tr>
+              <td>Sprint Points (GC Riders):</td>
+              <td>{totalSprintPoints}</td>
+            </tr>
+            <tr>
+              <td>Mountain Points (GC Riders):</td>
+              <td>{totalMountainPoints}</td>
+            </tr>
+            <tr>
+              <td>Total Points:</td>
+              <td>{totalPoints}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
       {/* GC Riders */}
       <h2 style={{ fontSize: "1.45em" }}>GC Riders</h2>

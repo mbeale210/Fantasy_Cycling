@@ -7,12 +7,30 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [clientError, setClientError] = useState(""); // New state for client-side errors
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error: authError } = useSelector((state) => state.auth);
 
+  // Client-side validation
+  const validateInput = () => {
+    if (!email.includes("@")) {
+      return "Invalid email format. Email must contain '@'.";
+    }
+    if (password.length < 6 || !/\d/.test(password)) {
+      return "Password must be at least 6 characters long and contain at least one number.";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationError = validateInput();
+    if (validationError) {
+      setClientError(validationError); // Set client-side error if validation fails
+      return;
+    }
+    setClientError(""); // Clear any client-side errors
     try {
       await dispatch(registerUser({ username, email, password })).unwrap();
       navigate("/login");
@@ -24,6 +42,7 @@ const Register = () => {
   return (
     <div className="register">
       <h2>Register</h2>
+      {clientError && <p className="error">{clientError}</p>}
       {authError && <p className="error">{authError.message}</p>}
       <form onSubmit={handleSubmit}>
         <div>

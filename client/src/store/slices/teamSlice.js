@@ -14,6 +14,19 @@ export const fetchUserTeams = createAsyncThunk(
   }
 );
 
+// Fetch team points for GC riders
+export const fetchTeamPoints = createAsyncThunk(
+  "teams/fetchTeamPoints",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/teams/points");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Create a new team
 export const createTeam = createAsyncThunk(
   "teams/createTeam",
@@ -108,6 +121,7 @@ const teamSlice = createSlice({
     teams: [],
     loading: false,
     error: null,
+    teamPoints: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -124,6 +138,10 @@ const teamSlice = createSlice({
       .addCase(fetchUserTeams.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // Fetch team points
+      .addCase(fetchTeamPoints.fulfilled, (state, action) => {
+        state.teamPoints = action.payload;
       })
       // Create team
       .addCase(createTeam.fulfilled, (state, action) => {
