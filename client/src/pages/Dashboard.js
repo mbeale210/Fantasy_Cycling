@@ -35,7 +35,7 @@ const Dashboard = () => {
     <div className="dashboard">
       <h1 className="team-name">Welcome, {user?.username}!</h1>
 
-      <section className="my-teams">
+      <section className="team-points">
         <h2>My Teams</h2>
         <div className="teams-container">
           {teams.length > 0 ? (
