@@ -81,11 +81,16 @@ const MyTeam = () => {
       {message && <div className="message">{message}</div>}
 
       {/* Team Name Section */}
-      <h1 style={{ fontSize: "1.5em", fontWeight: "bold" }}>
+      <h1 className="team-name">
         {!isEditing ? (
           <>
-            {newTeamName}{" "}
-            <button onClick={() => setIsEditing(true)}>Change Team Name</button>
+            {newTeamName}
+            <button
+              className="change-team-name-btn"
+              onClick={() => setIsEditing(true)}
+            >
+              Change Team Name
+            </button>
           </>
         ) : (
           <>

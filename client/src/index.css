@@ -35,6 +35,19 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.3;
 }
 
+/* Team Name Styling */
+.team-name {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.change-team-name-btn {
+  display: block;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
 /* Navigation */
 nav {
   background-color: #333;
