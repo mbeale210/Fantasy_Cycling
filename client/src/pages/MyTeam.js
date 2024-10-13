@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchUserTeams } from "../store/slices/teamSlice";
 
 const MyTeam = () => {
   const { teamId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { teams, loading } = useSelector((state) => state.teams);
   const team = teams.find((t) => t.id.toString() === teamId);
 
@@ -13,19 +14,22 @@ const MyTeam = () => {
     dispatch(fetchUserTeams());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (teams.length > 0 && !teamId) {
+      navigate(`/my-team/${teams[0].id}`);
+    }
+  }, [teams, navigate, teamId]);
+
   if (loading) return <div>Loading team...</div>;
   if (!team) return <div>Team not found</div>;
 
-  const activeGcRider = team.active_gc_rider || {};
-  const activeDomestiques = team.active_domestiques || [];
-  const benchDomestiques = team.bench_domestiques || [];
-  const benchGcRiders = team.bench_gc_riders || [];
+  const activeGcRider = team.riders.find((rider) => rider.is_gc) || {};
+  const activeDomestiques = team.riders.filter((rider) => !rider.is_gc);
 
   return (
     <div className="my-team">
       <h1>{team.name}</h1>
       <p>Total Points: {team.sprint_pts + team.mountain_pts}</p>
-      <p>Trades Left: {team.trades_left}</p>
 
       <h2>GC Riders</h2>
       <div>
@@ -36,14 +40,6 @@ const MyTeam = () => {
           <p>No active GC rider</p>
         )}
       </div>
-      <div>
-        <h3>Bench GC Riders</h3>
-        {benchGcRiders.length > 0 ? (
-          benchGcRiders.map((rider) => <p key={rider.id}>{rider.name}</p>)
-        ) : (
-          <p>No bench GC riders</p>
-        )}
-      </div>
 
       <h2>Domestiques</h2>
       <div>
@@ -52,14 +48,6 @@ const MyTeam = () => {
           activeDomestiques.map((rider) => <p key={rider.id}>{rider.name}</p>)
         ) : (
           <p>No active domestiques</p>
-        )}
-      </div>
-      <div>
-        <h3>Bench Domestiques</h3>
-        {benchDomestiques.length > 0 ? (
-          benchDomestiques.map((rider) => <p key={rider.id}>{rider.name}</p>)
-        ) : (
-          <p>No bench domestiques</p>
         )}
       </div>
     </div>

@@ -16,15 +16,11 @@ The Fantasy Cycling App allows users to:
 Register and log in with authentication managed by JWT.
 Create fantasy cycling teams.
 Draft and manage riders for their teams.
-Compete in different fantasy leagues.
 View rider rankings and stage results.
-View team standings across leagues.
+View team standings across the league.
 Features
 Authentication: JWT-based authentication for secure login and registration.
 Fantasy Teams: Users can create teams, draft riders, and manage rosters.
-Leagues: Users can join and compete in leagues.
-Real-time Data: Integration with ProCyclingStats to fetch rider rankings (or use mock data if needed).
-Responsive Design: Mobile-friendly UI built with React.
 RESTful API: Backend built using Flask, serving data to the React frontend.
 Technologies Used
 Backend (Flask)

@@ -29,7 +29,7 @@ export const updateRoster = createAsyncThunk(
   "teams/updateRoster",
   async ({ teamId, rosterData }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/teams/${teamId}/roster`, rosterData);
+      const response = await api.put(`/teams/${teamId}/roster`, rosterData); // Correct PUT request
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

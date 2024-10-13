@@ -44,6 +44,27 @@ def seed_stages():
         db.session.add(stage)
     db.session.commit()
 
+def seed_stage_results():
+    stages = Stage.query.filter(Stage.is_rest_day == False).all()  # Skip rest days
+    riders = Rider.query.all()
+
+    for stage in stages:
+        for rider in riders:
+            # Generate random time between 4 hours and 5 hours (in seconds)
+            random_time_seconds = random.randint(4 * 3600, 5 * 3600)
+            sprint_pts = random.randint(0, 50)  # Random sprint points
+            mountain_pts = random.randint(0, 50)  # Random mountain points
+
+            result = StageResult(
+                rider_id=rider.id,
+                stage_id=stage.id,
+                time=random_time_seconds,
+                sprint_pts=sprint_pts,
+                mountain_pts=mountain_pts
+            )
+            db.session.add(result)
+    db.session.commit()
+
 def seed_users():
     # Add the specified user
     brigid = User(username="Brigid", email="brigid@gmail.com")
@@ -81,6 +102,7 @@ def main():
         db.create_all()
         seed_riders()
         seed_stages()
+        seed_stage_results()  # Add stage results seeding
         seed_users()
         seed_leagues()
         seed_fantasy_teams()

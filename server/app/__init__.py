@@ -5,13 +5,13 @@ from flask_jwt_extended import JWTManager, create_access_token, create_refresh_t
 from flask_cors import CORS
 from config import Config
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_bcrypt import Bcrypt  # Import Bcrypt
+from flask_bcrypt import Bcrypt
 
 # Initialize extensions
 db = SQLAlchemy()
 migrate = Migrate()
 jwt = JWTManager()
-bcrypt = Bcrypt()  # Initialize Bcrypt here
+bcrypt = Bcrypt()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -22,7 +22,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    bcrypt.init_app(app)  # Initialize bcrypt with app
+    bcrypt.init_app(app)
 
     # Import routes and models after extensions are initialized
     from app.models import User, League, FantasyTeam, Rider, Stage, StageResult
@@ -82,7 +82,7 @@ def create_app(config_class=Config):
     @app.route('/riders/rankings', methods=['GET', 'OPTIONS'])
     def get_rider_rankings():
         if request.method == 'OPTIONS':
-            return jsonify({'message': 'CORS preflight successful'}), 200  # Handle preflight
+            return jsonify({'message': 'CORS preflight successful'}), 200
 
         riders = Rider.query.order_by(Rider.rank).all()
         return jsonify([{
@@ -98,7 +98,7 @@ def create_app(config_class=Config):
     # Open Riders Route - Fetch only unassigned riders
     @app.route('/riders/open', methods=['GET'])
     def get_open_riders():
-        open_riders = Rider.query.filter(~Rider.fantasy_teams.any()).all()  # Query for riders not on a team
+        open_riders = Rider.query.filter(~Rider.fantasy_teams.any()).all()
         return jsonify([{
             "id": rider.id,
             "name": rider.name,
@@ -114,7 +114,7 @@ def create_app(config_class=Config):
     @jwt_required()
     def handle_teams():
         if request.method == 'OPTIONS':
-            return jsonify({'message': 'CORS preflight successful'}), 200  # Handle preflight
+            return jsonify({'message': 'CORS preflight successful'}), 200
 
         user_id = get_jwt_identity()
         if request.method == 'POST':
@@ -130,18 +130,45 @@ def create_app(config_class=Config):
                 "name": team.name,
                 "sprint_pts": team.sprint_pts,
                 "mountain_pts": team.mountain_pts,
-                "trades_left": team.trades_left,
                 "riders": [{
                     "id": rider.id,
                     "name": rider.name
                 } for rider in team.riders]
             } for team in teams]), 200
 
+    # PUT route to update the team's roster
+    @app.route('/teams/<int:team_id>/roster', methods=['PUT', 'OPTIONS'])
+    @jwt_required()
+    def update_team_roster(team_id):
+        if request.method == 'OPTIONS':
+            return jsonify({'message': 'CORS preflight successful'}), 200
+
+        data = request.get_json()
+        team = FantasyTeam.query.get_or_404(team_id)
+
+        # Update riders with actual Rider objects, not dicts
+        riders_ids = [r['id'] for r in data.get('riders', [])]
+        riders = Rider.query.filter(Rider.id.in_(riders_ids)).all()
+
+        team.riders = riders
+
+        db.session.commit()
+        return jsonify({
+            "id": team.id,
+            "name": team.name,
+            "sprint_pts": team.sprint_pts,
+            "mountain_pts": team.mountain_pts,
+            "riders": [{
+                "id": rider.id,
+                "name": rider.name
+            } for rider in team.riders]
+        }), 200
+
     # Stages Route
     @app.route('/stages', methods=['GET', 'OPTIONS'])
     def get_stages():
         if request.method == 'OPTIONS':
-            return jsonify({'message': 'CORS preflight successful'}), 200  # Handle preflight
+            return jsonify({'message': 'CORS preflight successful'}), 200
 
         stages = Stage.query.all()
         return jsonify([{
@@ -151,5 +178,18 @@ def create_app(config_class=Config):
             "type": stage.type,
             "is_rest_day": stage.is_rest_day
         } for stage in stages]), 200
+
+    # Route for fetching stage results
+    @app.route('/stages/<int:stage_id>/results', methods=['GET'])
+    def get_stage_results(stage_id):
+        results = StageResult.query.filter_by(stage_id=stage_id).all()
+        return jsonify([{
+            "id": result.id,
+            "rider_name": result.rider.name,
+            "team": result.rider.fantasy_teams[0].name if result.rider.fantasy_teams else "Unassigned",
+            "time": result.time,
+            "sprint_pts": result.sprint_pts,
+            "mountain_pts": result.mountain_pts
+        } for result in results]), 200
 
     return app

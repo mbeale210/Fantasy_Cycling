@@ -19,35 +19,20 @@ const OpenRiders = () => {
   };
 
   const handleDraft = (rider) => {
-    const userTeam = teams[0];
+    const userTeam = teams[0]; // For simplicity, assuming only one team.
 
-    if (userTeam && userTeam.trades_left > 0) {
-      let newRoster = {};
+    // Remove trade point restrictions and directly update the roster
+    let newRoster = {
+      ...userTeam,
+      riders: [...(userTeam.riders || []), rider], // Add the new rider to the roster
+    };
 
-      if (rider.role === "gc") {
-        newRoster = {
-          ...userTeam,
-          active_gc_rider: rider,
-        };
-      } else if (rider.role === "domestique") {
-        newRoster = {
-          ...userTeam,
-          active_domestiques: [...(userTeam.active_domestiques || []), rider],
-        };
-      } else {
-        alert("Rider role is not supported for drafting.");
-        return;
-      }
-
-      dispatch(
-        updateRoster({
-          teamId: userTeam.id,
-          rosterData: newRoster,
-        })
-      );
-    } else {
-      alert("You don't have any trades left or you don't have a team yet.");
-    }
+    dispatch(
+      updateRoster({
+        teamId: userTeam.id,
+        rosterData: newRoster,
+      })
+    );
   };
 
   if (loading) {
@@ -57,8 +42,8 @@ const OpenRiders = () => {
   const displayRiders = searchTerm
     ? riders.filter(
         (rider) =>
-          rider.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          rider.team.toLowerCase().includes(searchTerm.toLowerCase())
+          rider.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          rider.team?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : riders;
 
