@@ -20,7 +20,8 @@ const Header = () => {
                 <Link to="/dashboard">Dashboard</Link>
               </li>
               <li>
-                <Link to="/my-team">My Team</Link>
+                {/* Dynamically link to the user's specific team page */}
+                <Link to={`/my-team/${user.id}`}>My Team</Link>
               </li>
               <li>
                 <Link to="/results">Stage Results</Link>
