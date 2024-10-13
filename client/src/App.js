@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import MyTeam from "./pages/MyTeam";
+import CreateTeam from "./pages/CreateTeam";
 import StageResults from "./pages/StageResults";
 import OpenRiders from "./pages/OpenRiders";
 import TeamStandings from "./pages/TeamStandings";
@@ -18,7 +19,6 @@ import TeamStandings from "./pages/TeamStandings";
 function App() {
   const dispatch = useDispatch();
 
-  // Check if the token exists before attempting to fetch user data
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -38,6 +38,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/my-team/:teamId" element={<MyTeam />} />
+              <Route path="/create-team" element={<CreateTeam />} />
               <Route path="/results" element={<StageResults />} />
               <Route path="/riders" element={<OpenRiders />} />
               <Route path="/standings" element={<TeamStandings />} />

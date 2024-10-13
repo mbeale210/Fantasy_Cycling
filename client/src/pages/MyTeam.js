@@ -6,6 +6,7 @@ import {
   updateTeamName,
   removeRiderFromTeam,
   swapRiderRole,
+  deleteTeam,
 } from "../store/slices/teamSlice";
 
 const MyTeam = () => {
@@ -16,7 +17,8 @@ const MyTeam = () => {
   const team = teams.find((t) => t.id.toString() === teamId);
 
   const [newTeamName, setNewTeamName] = useState(team ? team.name : "");
-  const [message, setMessage] = useState(""); // To show success/failure messages
+  const [message, setMessage] = useState("");
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   useEffect(() => {
     dispatch(fetchUserTeams());
@@ -39,15 +41,31 @@ const MyTeam = () => {
   const handleRemoveRider = (riderId) => {
     dispatch(removeRiderFromTeam({ teamId: team.id, riderId }))
       .unwrap()
-      .then(() => setMessage("Rider removed successfully"))
+      .then(() => {
+        setMessage("Rider removed successfully");
+        dispatch(fetchUserTeams()); // Fetch teams again to update the UI dynamically
+      })
       .catch(() => setMessage("Failed to remove rider"));
   };
 
   const handleSwapRider = (riderId) => {
     dispatch(swapRiderRole({ teamId: team.id, riderId }))
       .unwrap()
-      .then(() => setMessage("Rider role swapped successfully"))
+      .then(() => {
+        setMessage("Rider role swapped successfully");
+        dispatch(fetchUserTeams()); // Fetch teams again to update the UI dynamically
+      })
       .catch(() => setMessage("Failed to swap rider role"));
+  };
+
+  const handleDeleteTeam = () => {
+    dispatch(deleteTeam(teamId))
+      .unwrap()
+      .then(() => {
+        setMessage("Team deleted successfully");
+        navigate("/dashboard");
+      })
+      .catch(() => setMessage("Failed to delete team"));
   };
 
   if (loading) return <div>Loading team...</div>;
@@ -69,10 +87,9 @@ const MyTeam = () => {
       </h1>
       <p>Total Points: {team.sprint_pts + team.mountain_pts}</p>
 
-      {/* GC Riders Section */}
+      {/* GC Riders */}
       <h2>GC Riders</h2>
       <div>
-        <h3>Active GC Rider</h3>
         {gcRiders.length > 0 ? (
           <table>
             <thead>
@@ -106,10 +123,9 @@ const MyTeam = () => {
         )}
       </div>
 
-      {/* Domestiques Section */}
+      {/* Domestiques */}
       <h2>Domestiques</h2>
       <div>
-        <h3>Active Domestiques</h3>
         {domestiques.length > 0 ? (
           <table>
             <thead>
@@ -128,8 +144,7 @@ const MyTeam = () => {
                     </button>
                   </td>
                   <td>{rider.name}</td>
-                  {/* Conditionally render "Domestique" or "GC Rider" based on is_gc */}
-                  <td>{rider.is_gc ? "GC Rider" : "Domestique"}</td>
+                  <td>Domestique</td>
                   <td>
                     <button onClick={() => handleRemoveRider(rider.id)}>
                       Remove
@@ -143,6 +158,20 @@ const MyTeam = () => {
           <p>No active domestiques</p>
         )}
       </div>
+
+      {showDeleteConfirmation ? (
+        <div className="delete-confirmation">
+          <p>Are you sure you want to delete this team?</p>
+          <button onClick={handleDeleteTeam}>Yes</button>
+          <button onClick={() => setShowDeleteConfirmation(false)}>
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <button onClick={() => setShowDeleteConfirmation(true)}>
+          Delete Team
+        </button>
+      )}
     </div>
   );
 };

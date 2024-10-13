@@ -31,7 +31,7 @@ const Dashboard = () => {
         ) : (
           <p>
             You haven't created any teams yet.{" "}
-            <Link to="/my-team">Create a team</Link>
+            <Link to="/create-team">Create a team</Link>
           </p>
         )}
       </section>

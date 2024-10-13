@@ -18,9 +18,9 @@ const RiderList = ({ riders, showRank, onDraft }) => {
           <tr key={rider.id}>
             {showRank && <td>{index + 1}</td>} {/* Add the ranking number */}
             <td>{rider.name}</td>
-            <td>{rider.team || "N/A"}</td>{" "}
+            <td>{rider.team || "N/A"}</td>
             {/* Show team name or N/A if not available */}
-            <td>{rider.points || 0}</td>{" "}
+            <td>{rider.points || 0}</td>
             {/* Show points or 0 if not available */}
             <td>{rider.is_gc ? "GC" : "Domestique"}</td>
             {onDraft && (

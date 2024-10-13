@@ -32,7 +32,12 @@ const OpenRiders = () => {
         teamId: userTeam.id,
         rosterData: newRoster,
       })
-    );
+    )
+      .unwrap()
+      .then(() => {
+        dispatch(fetchOpenRiders()); // Fetch the updated list of open riders after drafting
+      })
+      .catch((error) => console.error("Failed to update roster", error));
   };
 
   if (loading) {

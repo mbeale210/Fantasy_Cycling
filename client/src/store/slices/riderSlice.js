@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../../services/api"; // Ensure api is imported
+import api from "../../services/api";
 
-// Thunk to fetch all riders
+// Fetch all riders
 export const fetchRiders = createAsyncThunk(
   "riders/fetchRiders",
   async (_, { rejectWithValue }) => {
@@ -14,12 +14,12 @@ export const fetchRiders = createAsyncThunk(
   }
 );
 
-// Thunk to fetch open riders (riders not assigned to any team)
+// Fetch open riders (riders not assigned to any team)
 export const fetchOpenRiders = createAsyncThunk(
   "riders/fetchOpenRiders",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/riders/open"); // Using the new API endpoint
+      const response = await api.get("/riders/open");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

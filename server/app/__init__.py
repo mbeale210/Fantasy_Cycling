@@ -31,7 +31,7 @@ def create_app(config_class=Config):
     @app.route('/auth/register', methods=['POST'])
     def register():
         data = request.get_json()
-        if User.query.filter_by(username=data['username']).first():
+        if User.query.filter_by(username(data['username'])).first():
             return jsonify({"message": "Username already exists"}), 400
         if User.query.filter_by(email=data['email']).first():
             return jsonify({"message": "Email already exists"}), 400
@@ -119,10 +119,19 @@ def create_app(config_class=Config):
         user_id = get_jwt_identity()
         if request.method == 'POST':
             data = request.get_json()
-            new_team = FantasyTeam(name=data['name'], user_id=user_id, league_id=data.get('league_id'))
+
+            # Automatically assign the first available league for now
+            default_league = League.query.first()  # Assuming you only have one league for now
+
+            if not default_league:
+                return jsonify({"message": "No leagues found"}), 400  # Return error if no league exists
+
+            # Use the default_league.id if the league_id is not provided
+            new_team = FantasyTeam(name=data['name'], user_id=user_id, league_id=default_league.id)
             db.session.add(new_team)
             db.session.commit()
             return jsonify({"message": "Team created successfully", "id": new_team.id}), 201
+
         elif request.method == 'GET':
             teams = FantasyTeam.query.filter_by(user_id=user_id).all()
             return jsonify([{
@@ -188,6 +197,25 @@ def create_app(config_class=Config):
             db.session.commit()
             return jsonify({"message": "Rider removed successfully", "id": team.id, "riderId": rider.id}), 200
         return jsonify({"message": "Rider not found on team"}), 404
+
+    # Route to delete a team
+    @app.route('/teams/<int:team_id>', methods=['DELETE', 'OPTIONS'])
+    @jwt_required()
+    def delete_team(team_id):
+        if request.method == 'OPTIONS':
+            # CORS preflight handling
+            return jsonify({'message': 'CORS preflight successful'}), 200
+
+        team = FantasyTeam.query.get_or_404(team_id)
+
+        # Check if the user deleting the team is the owner of the team
+        current_user_id = get_jwt_identity()
+        if team.user_id != current_user_id:
+            return jsonify({'message': 'You are not authorized to delete this team'}), 403
+
+        db.session.delete(team)
+        db.session.commit()
+        return jsonify({"message": "Team deleted successfully", "id": team.id}), 200
 
     # Route to swap a GC rider with a domestique
     @app.route('/teams/<int:team_id>/riders/<int:rider_id>/swap', methods=['POST', 'OPTIONS'])

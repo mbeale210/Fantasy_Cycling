@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../services/api";
 
+// Fetch all teams for the logged-in user
 export const fetchUserTeams = createAsyncThunk(
   "teams/fetchUserTeams",
   async (_, { rejectWithValue }) => {
@@ -13,6 +14,7 @@ export const fetchUserTeams = createAsyncThunk(
   }
 );
 
+// Create a new team
 export const createTeam = createAsyncThunk(
   "teams/createTeam",
   async (teamData, { rejectWithValue }) => {
@@ -25,6 +27,7 @@ export const createTeam = createAsyncThunk(
   }
 );
 
+// Update the roster of a team
 export const updateRoster = createAsyncThunk(
   "teams/updateRoster",
   async ({ teamId, rosterData }, { rejectWithValue }) => {
@@ -37,6 +40,7 @@ export const updateRoster = createAsyncThunk(
   }
 );
 
+// Update the name of a team
 export const updateTeamName = createAsyncThunk(
   "teams/updateTeamName",
   async ({ teamId, newName }, { rejectWithValue }) => {
@@ -51,6 +55,7 @@ export const updateTeamName = createAsyncThunk(
   }
 );
 
+// Remove a rider from a team
 export const removeRiderFromTeam = createAsyncThunk(
   "teams/removeRiderFromTeam",
   async ({ teamId, riderId }, { rejectWithValue }) => {
@@ -63,7 +68,7 @@ export const removeRiderFromTeam = createAsyncThunk(
   }
 );
 
-// New action for swapping rider roles between GC and Domestique
+// Swap the role of a rider (GC to Domestique or vice versa)
 export const swapRiderRole = createAsyncThunk(
   "teams/swapRiderRole",
   async ({ teamId, riderId }, { rejectWithValue }) => {
@@ -84,6 +89,19 @@ export const swapRiderRole = createAsyncThunk(
   }
 );
 
+// Delete a team
+export const deleteTeam = createAsyncThunk(
+  "teams/deleteTeam",
+  async (teamId, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/teams/${teamId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const teamSlice = createSlice({
   name: "teams",
   initialState: {
@@ -94,6 +112,7 @@ const teamSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch teams
       .addCase(fetchUserTeams.pending, (state) => {
         state.loading = true;
       })
@@ -106,9 +125,11 @@ const teamSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // Create team
       .addCase(createTeam.fulfilled, (state, action) => {
         state.teams.push(action.payload);
       })
+      // Update roster
       .addCase(updateRoster.fulfilled, (state, action) => {
         const index = state.teams.findIndex(
           (team) => team.id === action.payload.id
@@ -117,6 +138,7 @@ const teamSlice = createSlice({
           state.teams[index] = action.payload;
         }
       })
+      // Update team name
       .addCase(updateTeamName.fulfilled, (state, action) => {
         const index = state.teams.findIndex(
           (team) => team.id === action.payload.id
@@ -125,6 +147,7 @@ const teamSlice = createSlice({
           state.teams[index].name = action.payload.name;
         }
       })
+      // Remove rider from team
       .addCase(removeRiderFromTeam.fulfilled, (state, action) => {
         const team = state.teams.find((team) => team.id === action.payload.id);
         if (team) {
@@ -133,11 +156,18 @@ const teamSlice = createSlice({
           );
         }
       })
+      // Swap rider role
       .addCase(swapRiderRole.fulfilled, (state, action) => {
         const team = state.teams.find((team) => team.id === action.payload.id);
         if (team) {
-          team.riders = action.payload.riders; // Update the riders after swapping
+          team.riders = action.payload.riders;
         }
+      })
+      // Delete team
+      .addCase(deleteTeam.fulfilled, (state, action) => {
+        state.teams = state.teams.filter(
+          (team) => team.id !== action.payload.id
+        );
       });
   },
 });
