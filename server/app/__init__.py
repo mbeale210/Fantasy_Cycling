@@ -31,7 +31,7 @@ def create_app(config_class=Config):
     @app.route('/auth/register', methods=['POST'])
     def register():
         data = request.get_json()
-        if User.query.filter_by(username(data['username'])).first():
+        if User.query.filter_by(username=data['username']).first():
             return jsonify({"message": "Username already exists"}), 400
         if User.query.filter_by(email=data['email']).first():
             return jsonify({"message": "Email already exists"}), 400
@@ -92,7 +92,8 @@ def create_app(config_class=Config):
             "career_points": rider.career_points,
             "sprint_pts": rider.sprint_pts,
             "mountain_pts": rider.mountain_pts,
-            "is_gc": rider.is_gc
+            "is_gc": rider.is_gc,
+            "team": rider.fantasy_teams[0].name if rider.fantasy_teams else "Open Rider"  # Get team name or "Open Rider"
         } for rider in riders]), 200
 
     # Open Riders Route - Fetch only unassigned riders
