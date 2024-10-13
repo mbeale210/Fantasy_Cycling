@@ -1,6 +1,9 @@
 import React from "react";
 
 const RiderResults = ({ results }) => {
+  // Sort results by time (shortest to longest)
+  const sortedResults = [...results].sort((a, b) => a.time - b.time);
+
   return (
     <table>
       <thead>
@@ -14,7 +17,7 @@ const RiderResults = ({ results }) => {
         </tr>
       </thead>
       <tbody>
-        {results.map((result, index) => (
+        {sortedResults.map((result, index) => (
           <tr key={result.id}>
             <td>{index + 1}</td>
             <td>{result.rider_name}</td>

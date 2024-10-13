@@ -273,7 +273,48 @@ def create_app(config_class=Config):
             "team": result.rider.fantasy_teams[0].name if result.rider.fantasy_teams else "Unassigned",
             "time": result.time,
             "sprint_pts": result.sprint_pts,
-            "mountain_pts": result.mountain_pts
+            "mountain_pts": result.mountain_pts,
+            "is_gc": result.rider.is_gc  # Ensure GC status is passed
         } for result in results]), 200
+
+    # Summative Stage Results Route
+    @app.route('/stages/<int:stage_id>/summative-results', methods=['GET'])
+    def get_summative_stage_results(stage_id):
+        stages = Stage.query.filter(Stage.id <= stage_id).order_by(Stage.number).all()
+        rider_stats = {}
+
+        # Iterate through each stage up to the selected one and sum the rider times and points
+        for stage in stages:
+            results = StageResult.query.filter_by(stage_id=stage.id).all()
+            for result in results:
+                if result.rider_id not in rider_stats:
+                    rider_stats[result.rider_id] = {
+                        "total_time": 0,
+                        "total_sprint_pts": 0,
+                        "total_mountain_pts": 0
+                    }
+                rider_stats[result.rider_id]["total_time"] += result.time
+                rider_stats[result.rider_id]["total_sprint_pts"] += result.sprint_pts
+                rider_stats[result.rider_id]["total_mountain_pts"] += result.mountain_pts
+
+        # Get rider details with summed times and points
+        summative_results = []
+        for rider_id, stats in rider_stats.items():
+            rider = Rider.query.get(rider_id)
+            team_name = rider.fantasy_teams[0].name if rider.fantasy_teams else "Unassigned"
+            if rider.is_gc:
+                summative_results.append({
+                    "rider_id": rider.id,
+                    "rider_name": rider.name,
+                    "team": team_name,
+                    "total_time": stats["total_time"],
+                    "total_sprint_pts": stats["total_sprint_pts"],
+                    "total_mountain_pts": stats["total_mountain_pts"]
+                })
+
+        # Sort results by total time
+        summative_results.sort(key=lambda x: x['total_time'])
+
+        return jsonify(summative_results), 200
 
     return app

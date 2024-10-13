@@ -25,17 +25,35 @@ export const fetchStageResults = createAsyncThunk(
   }
 );
 
+export const fetchSummativeStageResults = createAsyncThunk(
+  "stages/fetchSummativeStageResults",
+  async (stageNumber, { rejectWithValue }) => {
+    try {
+      const response = await api.get(
+        `/stages/${stageNumber}/summative-results`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const stageSlice = createSlice({
   name: "stages",
   initialState: {
     stages: [],
     currentStageResults: [],
+    currentSummativeStageResults: [],
     loading: false,
     error: null,
   },
   reducers: {
     clearCurrentStageResults: (state) => {
       state.currentStageResults = [];
+    },
+    clearCurrentSummativeStageResults: (state) => {
+      state.currentSummativeStageResults = [];
     },
   },
   extraReducers: (builder) => {
@@ -63,9 +81,22 @@ const stageSlice = createSlice({
       .addCase(fetchStageResults.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchSummativeStageResults.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchSummativeStageResults.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentSummativeStageResults = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchSummativeStageResults.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearCurrentStageResults } = stageSlice.actions;
+export const { clearCurrentStageResults, clearCurrentSummativeStageResults } =
+  stageSlice.actions;
 export default stageSlice.reducer;
