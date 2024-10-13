@@ -70,6 +70,90 @@ h1, h2, h3, h4, h5, h6 {
   margin: 1rem 0;
 }
 
+/* Dashboard Styles */
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.teams-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 2rem auto;
+}
+
+.create-team-prompt {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.stages-container {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  width: 80%;
+}
+
+.stages-list {
+  list-style: none;
+  padding: 0;
+}
+
+.stage-item {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.stage-item:last-child {
+  border-bottom: none;
+}
+
+.stage-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.rest-day {
+  color: #666;
+  font-style: italic;
+}
+
+.links-container {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  width: 80%;
+}
+
+.links-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
 /* Buttons */
 button, .btn {
   display: inline-block;
@@ -239,5 +323,20 @@ nav ul li a:hover {
 
   table {
     width: 95%;
+  }
+
+  .stages-container,
+  .links-container {
+    width: 95%;
+  }
+
+  .links-list {
+    flex-direction: column;
+  }
+
+  .stage-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }
