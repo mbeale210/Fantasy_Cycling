@@ -11,7 +11,7 @@ const OpenRiders = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    dispatch(fetchOpenRiders()); // Fetch only open riders
+    dispatch(fetchOpenRiders());
   }, [dispatch]);
 
   const handleSearch = (e) => {
@@ -19,12 +19,11 @@ const OpenRiders = () => {
   };
 
   const handleDraft = (rider) => {
-    const userTeam = teams[0]; // For simplicity, assuming only one team.
+    const userTeam = teams[0];
 
-    // Remove trade point restrictions and directly update the roster
     let newRoster = {
       ...userTeam,
-      riders: [...(userTeam.riders || []), rider], // Add the new rider to the roster
+      riders: [...(userTeam.riders || []), rider],
     };
 
     dispatch(
@@ -35,13 +34,13 @@ const OpenRiders = () => {
     )
       .unwrap()
       .then(() => {
-        dispatch(fetchOpenRiders()); // Fetch the updated list of open riders after drafting
+        dispatch(fetchOpenRiders());
       })
       .catch((error) => console.error("Failed to update roster", error));
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   const displayRiders = searchTerm
@@ -55,18 +54,23 @@ const OpenRiders = () => {
   return (
     <div className="open-riders">
       <h1>Available Riders</h1>
-      <input
-        type="text"
-        placeholder="Search riders"
-        value={searchTerm}
-        onChange={handleSearch}
-      />
-      <RiderList
-        riders={displayRiders}
-        onDraft={handleDraft}
-        showTeam={false}
-      />{" "}
-      {/* showTeam is set to false */}
+
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search riders"
+          value={searchTerm}
+          onChange={handleSearch}
+        />
+      </div>
+
+      <div className="riders-table">
+        <RiderList
+          riders={displayRiders}
+          onDraft={handleDraft}
+          showTeam={false}
+        />
+      </div>
     </div>
   );
 };

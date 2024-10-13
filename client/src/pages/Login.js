@@ -26,8 +26,9 @@ const Login = () => {
       <h2>Login</h2>
       {error && <p className="error">{error}</p>}
       {authError && <p className="error">{authError.message}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
+
+      <form onSubmit={handleSubmit} className="auth-form">
+        <div className="form-group">
           <label htmlFor="username">Username:</label>
           <input
             type="text"
@@ -38,7 +39,8 @@ const Login = () => {
             autoComplete="username"
           />
         </div>
-        <div>
+
+        <div className="form-group">
           <label htmlFor="password">Password:</label>
           <input
             type="password"
@@ -49,7 +51,8 @@ const Login = () => {
             autoComplete="current-password"
           />
         </div>
-        <button type="submit" disabled={loading}>
+
+        <button type="submit" className="btn" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>

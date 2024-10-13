@@ -19,7 +19,7 @@ const CreateTeam = () => {
       .unwrap()
       .then(() => {
         setMessage("Team created successfully");
-        navigate("/riders"); // Automatically route to the OpenRiders page
+        navigate("/riders");
       })
       .catch(() => setMessage("Failed to create team"));
   };
@@ -28,13 +28,19 @@ const CreateTeam = () => {
     <div className="create-team">
       <h1>Create a New Team</h1>
       {message && <div className="message">{message}</div>}
-      <input
-        type="text"
-        placeholder="Enter team name"
-        value={teamName}
-        onChange={(e) => setTeamName(e.target.value)}
-      />
-      <button onClick={handleCreateTeam}>Create Team</button>
+
+      <div className="form-container">
+        <input
+          type="text"
+          placeholder="Enter team name"
+          value={teamName}
+          onChange={(e) => setTeamName(e.target.value)}
+          className="team-name-input"
+        />
+        <button className="btn create-team-btn" onClick={handleCreateTeam}>
+          Create Team
+        </button>
+      </div>
     </div>
   );
 };

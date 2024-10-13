@@ -25,28 +25,33 @@ const StageResults = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   return (
     <div className="stage-results">
       <h1>Stage Results</h1>
-      <select value={selectedStage} onChange={handleStageChange}>
-        <option value="">Select a stage</option>
-        {stages.map((stage) => (
-          <option key={stage.id} value={stage.id}>
-            Stage {stage.number}: {stage.type} -{" "}
-            {new Date(stage.date).toLocaleDateString()}
-            {stage.is_rest_day ? " (Rest Day)" : ""}
-          </option>
-        ))}
-      </select>
 
-      {selectedStage && currentStageResults.length > 0 ? (
-        <RiderResults results={currentStageResults} />
-      ) : (
-        <p>Select a stage to view results</p>
-      )}
+      <div className="stage-select">
+        <select value={selectedStage} onChange={handleStageChange}>
+          <option value="">Select a stage</option>
+          {stages.map((stage) => (
+            <option key={stage.id} value={stage.id}>
+              Stage {stage.number}: {stage.type} -{" "}
+              {new Date(stage.date).toLocaleDateString()}
+              {stage.is_rest_day ? " (Rest Day)" : ""}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="results-container">
+        {selectedStage && currentStageResults.length > 0 ? (
+          <RiderResults results={currentStageResults} />
+        ) : (
+          <p className="select-message">Select a stage to view results</p>
+        )}
+      </div>
     </div>
   );
 };

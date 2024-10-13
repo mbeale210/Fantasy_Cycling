@@ -36,26 +36,26 @@ const Home = () => {
       )
     : riders;
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="loading">Loading...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="home">
       <h1>Welcome to Fantasy Tour de France</h1>
       <p>Create your dream cycling team and compete with others!</p>
+
       {!user && (
-        <div>
+        <div className="auth-buttons">
           <Link to="/register">
-            <button>Sign Up</button>
+            <button className="btn">Sign Up</button>
           </Link>
           <Link to="/login">
-            <button>Login</button>
+            <button className="btn">Login</button>
           </Link>
         </div>
       )}
 
-      {/* Search Filter */}
-      <div>
+      <div className="search-container">
         <input
           type="text"
           placeholder="Search riders by name"

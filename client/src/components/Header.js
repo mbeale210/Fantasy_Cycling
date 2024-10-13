@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth } from "../context/AuthContext";
-import api from "../services/api"; // Import API for fetching user's team data
-import { logoutUser } from "../store/slices/authSlice"; // To clear the Redux state
+import api from "../services/api";
+import { logoutUser } from "../store/slices/authSlice";
 
 const Header = () => {
   const { user } = useSelector((state) => state.auth || {});
@@ -18,7 +18,7 @@ const Header = () => {
         try {
           const response = await api.get(`/teams?user_id=${user.id}`);
           if (response.data && response.data.length > 0) {
-            setFantasyTeam(response.data[0]); // Assuming only one team per user
+            setFantasyTeam(response.data[0]);
           }
         } catch (error) {
           console.error("Failed to fetch team data", error);
@@ -31,51 +31,53 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await logout(); // Logs out in AuthContext
-      dispatch(logoutUser()); // Clears the Redux user state
-      setFantasyTeam(null); // Clear team data after logout
-      navigate("/"); // Redirect to home page after logout
+      await logout();
+      dispatch(logoutUser());
+      setFantasyTeam(null);
+      navigate("/");
     } catch (error) {
       console.error("Failed to log out", error);
     }
   };
 
   return (
-    <header>
-      <nav>
-        <ul>
-          <li>
+    <header className="main-header">
+      <nav className="main-nav">
+        <ul className="nav-list">
+          <li className="nav-item">
             <Link to="/">Home</Link>
           </li>
           {user ? (
             <>
-              <li>
+              <li className="nav-item">
                 <Link to="/dashboard">Dashboard</Link>
               </li>
-              <li>
+              <li className="nav-item">
                 {fantasyTeam && (
                   <Link to={`/my-team/${fantasyTeam.id}`}>My Team</Link>
                 )}
               </li>
-              <li>
+              <li className="nav-item">
                 <Link to="/results">Stage Results</Link>
               </li>
-              <li>
+              <li className="nav-item">
                 <Link to="/riders">Open Riders</Link>
               </li>
-              <li>
+              <li className="nav-item">
                 <Link to="/standings">Team Standings</Link>
               </li>
-              <li>
-                <button onClick={handleLogout}>Logout</button>
+              <li className="nav-item">
+                <button className="btn logout-btn" onClick={handleLogout}>
+                  Logout
+                </button>
               </li>
             </>
           ) : (
             <>
-              <li>
+              <li className="nav-item">
                 <Link to="/login">Login</Link>
               </li>
-              <li>
+              <li className="nav-item">
                 <Link to="/register">Register</Link>
               </li>
             </>

@@ -6,7 +6,6 @@ import {
   fetchSummativeStageResults,
 } from "../store/slices/stageSlice";
 
-// Helper function to format time
 const formatTime = (totalSeconds) => {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -18,7 +17,7 @@ const formatTime = (totalSeconds) => {
 
 const TeamStandings = () => {
   const dispatch = useDispatch();
-  const { loading: teamsLoading } = useSelector((state) => state.teams); // Removed 'teams'
+  const { loading: teamsLoading } = useSelector((state) => state.teams);
   const {
     stages,
     currentSummativeStageResults,
@@ -42,10 +41,9 @@ const TeamStandings = () => {
   };
 
   if (teamsLoading || stagesLoading) {
-    return <div>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
-  // Sort results by cumulative time (shortest to longest)
   const sortedGCResults = [...currentSummativeStageResults].sort(
     (a, b) => a.total_time - b.total_time
   );
@@ -54,7 +52,7 @@ const TeamStandings = () => {
     <div className="team-standings">
       <h1>Team Standings</h1>
 
-      <div>
+      <div className="stage-select">
         <select value={selectedStage} onChange={handleStageChange}>
           <option value="">Select a stage</option>
           {stages.map((stage) => (
@@ -67,34 +65,41 @@ const TeamStandings = () => {
         </select>
       </div>
 
-      {selectedStage && sortedGCResults.length > 0 ? (
-        <table>
-          <thead>
-            <tr>
-              <th>Position</th>
-              <th>Team</th>
-              <th>Total Time</th>
-              <th>Total Sprint Points</th>
-              <th>Total Mountain Points</th>
-              <th>Rider Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedGCResults.map((result, index) => (
-              <tr key={result.rider_id}>
-                <td>{index + 1}</td>
-                <td>{result.team}</td>
-                <td>{formatTime(result.total_time)}</td>
-                <td>{result.total_sprint_pts}</td>
-                <td>{result.total_mountain_pts}</td>
-                <td>{result.rider_name}</td>
+      <div className="standings-table-container">
+        {selectedStage && sortedGCResults.length > 0 ? (
+          <table className="standings-table">
+            <thead>
+              <tr>
+                <th>Position</th>
+                <th>Team</th>
+                <th>Total Time</th>
+                <th>Total Sprint Points</th>
+                <th>Total Mountain Points</th>
+                <th>Rider Name</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>Select a stage to view GC riders on teams</p>
-      )}
+            </thead>
+            <tbody>
+              {sortedGCResults.map((result, index) => (
+                <tr
+                  key={result.rider_id}
+                  className={index === 0 ? "leader" : ""}
+                >
+                  <td>{index + 1}</td>
+                  <td>{result.team}</td>
+                  <td>{formatTime(result.total_time)}</td>
+                  <td>{result.total_sprint_pts}</td>
+                  <td>{result.total_mountain_pts}</td>
+                  <td>{result.rider_name}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="select-message">
+            Select a stage to view GC riders on teams
+          </p>
+        )}
+      </div>
     </div>
   );
 };

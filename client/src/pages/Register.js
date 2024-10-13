@@ -7,12 +7,11 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [clientError, setClientError] = useState(""); // New state for client-side errors
+  const [clientError, setClientError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error: authError } = useSelector((state) => state.auth);
 
-  // Client-side validation
   const validateInput = () => {
     if (!email.includes("@")) {
       return "Invalid email format. Email must contain '@'.";
@@ -27,10 +26,10 @@ const Register = () => {
     e.preventDefault();
     const validationError = validateInput();
     if (validationError) {
-      setClientError(validationError); // Set client-side error if validation fails
+      setClientError(validationError);
       return;
     }
-    setClientError(""); // Clear any client-side errors
+    setClientError("");
     try {
       await dispatch(registerUser({ username, email, password })).unwrap();
       navigate("/login");
@@ -44,8 +43,9 @@ const Register = () => {
       <h2>Register</h2>
       {clientError && <p className="error">{clientError}</p>}
       {authError && <p className="error">{authError.message}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
+
+      <form onSubmit={handleSubmit} className="auth-form">
+        <div className="form-group">
           <label htmlFor="username">Username:</label>
           <input
             type="text"
@@ -56,7 +56,8 @@ const Register = () => {
             autoComplete="username"
           />
         </div>
-        <div>
+
+        <div className="form-group">
           <label htmlFor="email">Email:</label>
           <input
             type="email"
@@ -67,7 +68,8 @@ const Register = () => {
             autoComplete="email"
           />
         </div>
-        <div>
+
+        <div className="form-group">
           <label htmlFor="password">Password:</label>
           <input
             type="password"
@@ -78,7 +80,8 @@ const Register = () => {
             autoComplete="new-password"
           />
         </div>
-        <button type="submit" disabled={loading}>
+
+        <button type="submit" className="btn" disabled={loading}>
           {loading ? "Registering..." : "Register"}
         </button>
       </form>
