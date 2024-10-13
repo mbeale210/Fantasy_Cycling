@@ -29,7 +29,7 @@ export const updateRoster = createAsyncThunk(
   "teams/updateRoster",
   async ({ teamId, rosterData }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/teams/${teamId}/roster`, rosterData); // Correct PUT request
+      const response = await api.put(`/teams/${teamId}/roster`, rosterData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -37,11 +37,46 @@ export const updateRoster = createAsyncThunk(
   }
 );
 
-export const addRiderToTeam = createAsyncThunk(
-  "teams/addRiderToTeam",
+export const updateTeamName = createAsyncThunk(
+  "teams/updateTeamName",
+  async ({ teamId, newName }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/teams/${teamId}/name`, {
+        name: newName,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const removeRiderFromTeam = createAsyncThunk(
+  "teams/removeRiderFromTeam",
   async ({ teamId, riderId }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/teams/${teamId}/riders`, { riderId });
+      const response = await api.delete(`/teams/${teamId}/riders/${riderId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// New action for swapping rider roles between GC and Domestique
+export const swapRiderRole = createAsyncThunk(
+  "teams/swapRiderRole",
+  async ({ teamId, riderId }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        `/teams/${teamId}/riders/${riderId}/swap`,
+        {}, // Make sure the body is an empty object (or provide necessary data)
+        {
+          headers: {
+            "Content-Type": "application/json", // Ensure the correct Content-Type
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -82,12 +117,26 @@ const teamSlice = createSlice({
           state.teams[index] = action.payload;
         }
       })
-      .addCase(addRiderToTeam.fulfilled, (state, action) => {
+      .addCase(updateTeamName.fulfilled, (state, action) => {
         const index = state.teams.findIndex(
           (team) => team.id === action.payload.id
         );
         if (index !== -1) {
-          state.teams[index] = action.payload;
+          state.teams[index].name = action.payload.name;
+        }
+      })
+      .addCase(removeRiderFromTeam.fulfilled, (state, action) => {
+        const team = state.teams.find((team) => team.id === action.payload.id);
+        if (team) {
+          team.riders = team.riders.filter(
+            (rider) => rider.id !== action.payload.riderId
+          );
+        }
+      })
+      .addCase(swapRiderRole.fulfilled, (state, action) => {
+        const team = state.teams.find((team) => team.id === action.payload.id);
+        if (team) {
+          team.riders = action.payload.riders; // Update the riders after swapping
         }
       });
   },

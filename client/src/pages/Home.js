@@ -8,6 +8,7 @@ const Home = () => {
   const [riders, setRiders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -24,6 +25,16 @@ const Home = () => {
 
     fetchRiders();
   }, []);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredRiders = searchTerm
+    ? riders.filter((rider) =>
+        rider.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : riders;
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -42,8 +53,19 @@ const Home = () => {
           </Link>
         </div>
       )}
+
+      {/* Search Filter */}
+      <div>
+        <input
+          type="text"
+          placeholder="Search riders by name"
+          value={searchTerm}
+          onChange={handleSearch}
+        />
+      </div>
+
       <h2>Current Rider Rankings</h2>
-      <RiderList riders={riders} />
+      <RiderList riders={filteredRiders} showRank={true} />
     </div>
   );
 };

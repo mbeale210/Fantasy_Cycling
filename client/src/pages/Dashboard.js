@@ -57,7 +57,8 @@ const Dashboard = () => {
         <h2>Quick Links</h2>
         <ul>
           <li>
-            <Link to="/riders">View All Riders</Link>
+            {/* Update the link to point to the Home page */}
+            <Link to="/">View All Riders</Link>
           </li>
           <li>
             <Link to="/results">Latest Results</Link>
