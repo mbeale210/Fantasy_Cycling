@@ -11,8 +11,9 @@ export const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!user) {
-      dispatch(fetchUser());
+    const token = localStorage.getItem("token");
+    if (token && !user) {
+      dispatch(fetchUser()); // Fetch user only if token is available
     }
   }, [dispatch, user]);
 
@@ -21,6 +22,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     dispatch(logoutUser());
   };
 

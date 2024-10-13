@@ -5,7 +5,7 @@ import {
   fetchUserTeams,
   updateTeamName,
   removeRiderFromTeam,
-  swapRiderRole, // Import the new swap action
+  swapRiderRole,
 } from "../store/slices/teamSlice";
 
 const MyTeam = () => {
@@ -16,6 +16,7 @@ const MyTeam = () => {
   const team = teams.find((t) => t.id.toString() === teamId);
 
   const [newTeamName, setNewTeamName] = useState(team ? team.name : "");
+  const [message, setMessage] = useState(""); // To show success/failure messages
 
   useEffect(() => {
     dispatch(fetchUserTeams());
@@ -36,21 +37,28 @@ const MyTeam = () => {
   };
 
   const handleRemoveRider = (riderId) => {
-    dispatch(removeRiderFromTeam({ teamId: team.id, riderId }));
+    dispatch(removeRiderFromTeam({ teamId: team.id, riderId }))
+      .unwrap()
+      .then(() => setMessage("Rider removed successfully"))
+      .catch(() => setMessage("Failed to remove rider"));
   };
 
   const handleSwapRider = (riderId) => {
-    dispatch(swapRiderRole({ teamId: team.id, riderId }));
+    dispatch(swapRiderRole({ teamId: team.id, riderId }))
+      .unwrap()
+      .then(() => setMessage("Rider role swapped successfully"))
+      .catch(() => setMessage("Failed to swap rider role"));
   };
 
   if (loading) return <div>Loading team...</div>;
   if (!team) return <div>Team not found</div>;
 
-  const activeGcRider = team.riders.find((rider) => rider.is_gc) || {};
-  const activeDomestiques = team.riders.filter((rider) => !rider.is_gc);
+  const gcRiders = team.riders.filter((rider) => rider.is_gc);
+  const domestiques = team.riders.filter((rider) => !rider.is_gc);
 
   return (
     <div className="my-team">
+      {message && <div className="message">{message}</div>}
       <h1>
         <input
           type="text"
@@ -61,37 +69,76 @@ const MyTeam = () => {
       </h1>
       <p>Total Points: {team.sprint_pts + team.mountain_pts}</p>
 
+      {/* GC Riders Section */}
       <h2>GC Riders</h2>
       <div>
         <h3>Active GC Rider</h3>
-        {activeGcRider.name ? (
-          <p>
-            <button onClick={() => handleSwapRider(activeGcRider.id)}>
-              Swap
-            </button>
-            {activeGcRider.name}
-            <button onClick={() => handleRemoveRider(activeGcRider.id)}>
-              Remove
-            </button>
-          </p>
+        {gcRiders.length > 0 ? (
+          <table>
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>Rider Name</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              {gcRiders.map((rider) => (
+                <tr key={rider.id}>
+                  <td>
+                    <button onClick={() => handleSwapRider(rider.id)}>
+                      Swap
+                    </button>
+                  </td>
+                  <td>{rider.name}</td>
+                  <td>GC Rider</td>
+                  <td>
+                    <button onClick={() => handleRemoveRider(rider.id)}>
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <p>No active GC rider</p>
         )}
       </div>
 
+      {/* Domestiques Section */}
       <h2>Domestiques</h2>
       <div>
         <h3>Active Domestiques</h3>
-        {activeDomestiques.length > 0 ? (
-          activeDomestiques.map((rider) => (
-            <p key={rider.id}>
-              <button onClick={() => handleSwapRider(rider.id)}>Swap</button>
-              {rider.name}
-              <button onClick={() => handleRemoveRider(rider.id)}>
-                Remove
-              </button>
-            </p>
-          ))
+        {domestiques.length > 0 ? (
+          <table>
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>Rider Name</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              {domestiques.map((rider) => (
+                <tr key={rider.id}>
+                  <td>
+                    <button onClick={() => handleSwapRider(rider.id)}>
+                      Swap
+                    </button>
+                  </td>
+                  <td>{rider.name}</td>
+                  {/* Conditionally render "Domestique" or "GC Rider" based on is_gc */}
+                  <td>{rider.is_gc ? "GC Rider" : "Domestique"}</td>
+                  <td>
+                    <button onClick={() => handleRemoveRider(rider.id)}>
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <p>No active domestiques</p>
         )}

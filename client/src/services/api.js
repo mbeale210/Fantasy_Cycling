@@ -22,15 +22,36 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+    // Prevent infinite refresh loop and check refresh token presence
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
+
       try {
         const refreshToken = localStorage.getItem("refreshToken");
-        const response = await axios.post("/auth/refresh", { refreshToken });
+        if (!refreshToken) {
+          throw new Error("No refresh token found");
+        }
+
+        // Ensure correct URL for refreshing token
+        const response = await axios.post(
+          `${
+            process.env.REACT_APP_API_URL || "http://localhost:5555"
+          }/auth/refresh`,
+          { refreshToken }
+        );
+
         localStorage.setItem("token", response.data.access_token);
-        return api(originalRequest);
+        originalRequest.headers[
+          "Authorization"
+        ] = `Bearer ${response.data.access_token}`;
+
+        return api(originalRequest); // Retry original request with new token
       } catch (refreshError) {
-        console.error("Error refreshing token:", refreshError);
+        console.error("Token refresh failed:", refreshError);
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
         window.location.href = "/login";

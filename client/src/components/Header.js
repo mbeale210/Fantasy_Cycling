@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
-  // Use optional chaining to avoid errors when state.auth is undefined
   const { user } = useSelector((state) => state.auth || {});
   const { logout } = useAuth();
 

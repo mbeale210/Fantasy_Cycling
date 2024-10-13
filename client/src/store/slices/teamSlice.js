@@ -70,10 +70,10 @@ export const swapRiderRole = createAsyncThunk(
     try {
       const response = await api.post(
         `/teams/${teamId}/riders/${riderId}/swap`,
-        {}, // Make sure the body is an empty object (or provide necessary data)
+        {},
         {
           headers: {
-            "Content-Type": "application/json", // Ensure the correct Content-Type
+            "Content-Type": "application/json",
           },
         }
       );

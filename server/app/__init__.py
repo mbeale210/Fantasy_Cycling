@@ -31,7 +31,7 @@ def create_app(config_class=Config):
     @app.route('/auth/register', methods=['POST'])
     def register():
         data = request.get_json()
-        if User.query.filter_by(username(data['username'])).first():
+        if User.query.filter_by(username=data['username']).first():
             return jsonify({"message": "Username already exists"}), 400
         if User.query.filter_by(email=data['email']).first():
             return jsonify({"message": "Email already exists"}), 400
@@ -132,7 +132,8 @@ def create_app(config_class=Config):
                 "mountain_pts": team.mountain_pts,
                 "riders": [{
                     "id": rider.id,
-                    "name": rider.name
+                    "name": rider.name,
+                    "is_gc": rider.is_gc,  # Ensure is_gc is included
                 } for rider in team.riders]
             } for team in teams]), 200
 
@@ -160,7 +161,8 @@ def create_app(config_class=Config):
             "mountain_pts": team.mountain_pts,
             "riders": [{
                 "id": rider.id,
-                "name": rider.name
+                "name": rider.name,
+                "is_gc": rider.is_gc
             } for rider in team.riders]
         }), 200
 
@@ -184,7 +186,7 @@ def create_app(config_class=Config):
         if rider in team.riders:
             team.riders.remove(rider)
             db.session.commit()
-            return jsonify({"id": team.id, "riderId": rider.id}), 200
+            return jsonify({"message": "Rider removed successfully", "id": team.id, "riderId": rider.id}), 200
         return jsonify({"message": "Rider not found on team"}), 404
 
     # Route to swap a GC rider with a domestique
@@ -206,9 +208,15 @@ def create_app(config_class=Config):
         db.session.commit()
 
         return jsonify({
+            "message": "Rider role swapped successfully",
             "id": rider.id,
             "name": rider.name,
-            "is_gc": rider.is_gc
+            "is_gc": rider.is_gc,
+            "riders": [{
+                "id": r.id,
+                "name": r.name,
+                "is_gc": r.is_gc
+            } for r in team.riders]
         }), 200
 
     # Stages Route

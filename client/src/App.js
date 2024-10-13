@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-// import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { fetchUser } from "./store/slices/authSlice";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -15,7 +16,15 @@ import OpenRiders from "./pages/OpenRiders";
 import TeamStandings from "./pages/TeamStandings";
 
 function App() {
-  //   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  // Check if the token exists before attempting to fetch user data
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      dispatch(fetchUser());
+    }
+  }, [dispatch]);
 
   return (
     <AuthProvider>

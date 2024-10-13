@@ -23,6 +23,7 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await api.post("/auth/login", credentials);
       localStorage.setItem("token", response.data.access_token);
+      localStorage.setItem("refreshToken", response.data.refresh_token); // Store refresh token
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -39,6 +40,7 @@ export const logoutUser = createAsyncThunk(
     try {
       await api.post("/auth/logout");
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
       return null;
     } catch (error) {
       return rejectWithValue(
@@ -57,6 +59,8 @@ export const fetchUser = createAsyncThunk(
       return response.data;
     } catch (error) {
       if (error.response && error.response.status === 401) {
+        localStorage.removeItem("token"); // Clear token if user is not authenticated
+        localStorage.removeItem("refreshToken");
         return rejectWithValue({ message: "Not authenticated" });
       }
       return rejectWithValue(
