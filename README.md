@@ -144,14 +144,19 @@ Teams
 POST /teams: Create a new fantasy team.
 GET /teams: Get all teams for the logged-in user.
 PUT /teams/:team_id/roster: Update the team's roster.
+DELETE /teams: Delete your fantasy team.
 Riders
 GET /riders: Get a list of all riders.
 GET /riders/rankings: Get the rider rankings (available without login).
+POST /riders: Add riders to a team
+POST /riders: Swap classification of Riders on team from GC to Domestique.
+Delete /riders: remove riders from teams. Rider in Open Riders classification.
 Stages
 GET /stages: Get all stages.
 GET /stages/:stage_id/results: Get results for a specific stage.
 
 Future Improvements
+Moving to sessions and cookies instead of Client Side storing of JWT Tokens.
 Leagues
 POST /leagues: Create a new league.
 POST /leagues/:league_id/join: Join an existing league.
