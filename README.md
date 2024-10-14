@@ -1,123 +1,165 @@
-Fantasy Cycling App
-Welcome to the Fantasy Cycling App, a web application that allows users to create and manage fantasy cycling teams, track rider performances, and compete in custom leagues. The app consists of a Flask backend and a React frontend.
+# Fantasy Cycling App
 
-Table of Contents
-Project Overview
-Features
-Technologies Used
-Setup and Installation
-Running the App
-Folder Structure
-API Endpoints
-Future Improvements
-Project Overview
-The Fantasy Cycling App allows users to:
+## Description
 
-Register and log in with authentication managed by JWT.
-Create fantasy cycling teams.
-Draft and manage riders for their teams.
-View rider rankings and stage results.
-View team standings across the league.
-Features
-Authentication: JWT-based authentication for secure login and registration.
-Fantasy Teams: Users can create teams, draft riders, and manage rosters.
-RESTful API: Backend built using Flask, serving data to the React frontend.
-Technologies Used
-Backend (Flask)
-Flask: Python web framework.
-Flask-JWT-Extended: JWT-based authentication.
-Flask-SQLAlchemy: Database ORM for managing models and queries.
-Flask-Migrate: Handling database migrations.
-SQLAlchemy: SQL ORM for database interactions.
-BeautifulSoup: Web scraping for real-world cycling data.
-Gunicorn: WSGI HTTP Server for deployment.
-Frontend (React)
-React: JavaScript library for building user interfaces.
-Redux: State management for handling user and team data.
-React Router: Navigation between pages.
-Axios: HTTP client for API requests.
-Redux Toolkit: Simplified Redux setup and slice management.
-Setup and Installation
-Prerequisites
+Fantasy Cycling App is a web application that allows users to create and manage fantasy cycling teams, track rider performances, and compete in custom leagues. The app consists of a Flask backend and a React frontend.
+
+## Features
+
+- Authentication: JWT-based authentication for secure login and registration
+- Fantasy Teams: Users can create teams, draft riders, and manage rosters
+- RESTful API: Backend built using Flask, serving data to the React frontend
+- Create and manage fantasy cycling teams
+- Draft and manage riders for teams
+- View rider rankings and stage results
+- View team standings across leagues
+
+## Technologies Used
+
+### Backend (Flask)
+
+- Flask - Python web framework
+- Flask-JWT-Extended - JWT-based authentication
+- Flask-SQLAlchemy - Database ORM for managing models and queries
+- Flask-Migrate - Handling database migrations
+- SQLAlchemy - SQL ORM for database interactions
+- BeautifulSoup - Web scraping for real-world cycling data
+- Gunicorn - WSGI HTTP Server for deployment
+
+### Frontend (React)
+
+- React - JavaScript library for building user interfaces
+- Redux - State management for handling user and team data
+- React Router - Navigation between pages
+- Axios - HTTP client for API requests
+- Redux Toolkit - Simplified Redux setup and slice management
+
+## Installation
+
+### Prerequisites
+
 Make sure you have the following installed:
 
-Python (3.8 or higher)
-Node.js (v14 or higher) and npm
-Pipenv (for managing Python environments)
-Backend Setup
-Clone the repository:
+- Python (3.8 or higher)
+- Node.js (v14 or higher) and npm
+- Pipenv (for managing Python environments)
 
-bash
-Copy code
+### Backend Setup
+
+1. Clone the repository:
+
+```console
 git clone https://github.com/your-username/Fantasy_Cycling.git
 cd Fantasy_Cycling/server
-Set up the virtual environment and install dependencies:
+```
 
-bash
-Copy code
+2. Set up the virtual environment and install dependencies:
+
+```console
 pipenv install
-Create a .env file in the server/ directory with the following variables:
+```
 
-bash
-Copy code
+3. Create a .env file in the server/ directory:
+
+```console
 SECRET_KEY=your-secret-key
 DATABASE_URL=sqlite:///fantasy_tdf.db
 JWT_SECRET_KEY=your-jwt-secret-key
-Initialize the database:
+```
 
-bash
-Copy code
-pipenv run flask db init
-pipenv run flask db migrate
-pipenv run flask db upgrade
-Seed the database with mock data:
-
-bash
-Copy code
-pipenv run python seed.py
-Frontend Setup
-Navigate to the client/ directory:
-
-bash
-Copy code
-cd ../client
-Install the required dependencies:
-
-bash
-Copy code
-npm install
-Create a .env file in the client/ directory with the following variables:
-
-bash
-Copy code
-REACT_APP_API_URL=http://localhost:5555
-Running the App
-Backend (Flask)
-Activate the virtual environment:
-
-bash
-Copy code
+4. Initialize the database:
+go to the server folder:
+Fantasy_cycling/server$
+```console
 pipenv shell
-Run the Flask server:
+flask db init
+flask db migrate
+flask db upgrade
+```
 
-bash
-Copy code
-flask run
-Frontend (React)
-Start the React development server:
+5. Seed the database:
 
-bash
-Copy code
+```console
+python seed.py
+```
+
+### Frontend Setup
+Wihtin another terminal.
+1. Navigate to client directory:
+
+```console
+cd ../client
+```
+
+2. Install dependencies:
+Within Fantasy_Cycling/client$
+```
+npm install
+```
+
+3. Create .env file:
+
+```console
+REACT_APP_API_URL=http://localhost:5555
+```
+
+## Usage
+
+### Running the Backend
+Within the server folder:
+Fantasy_Cycling/server$
+```console
+pipenv shell (if not already running a virtual environment)
+python run.py
+```
+
+### Running the Frontend
+Within another terminal navigate to the client folder.
+Fantasy_Cycling/client$
+```console
 npm start
-Accessing the Application
-Once both servers are running, open your browser and navigate to:
+```
 
-arduino
-Copy code
-http://localhost:3000
-Folder Structure
-bash
-Copy code
+Access the application at http://localhost:3000
+
+## API Endpoints
+
+### Authentication
+
+- POST /auth/register - Register a new user
+- POST /auth/login - Log in a user
+- POST /auth/refresh - Refresh JWT access token
+- GET /auth/user - Get current user details
+
+### Teams
+
+- POST /teams - Create new fantasy team
+- GET /teams - Get all teams for logged-in user
+- PUT /teams/:team_id/roster - Update team roster
+- DELETE /teams - Delete fantasy team
+
+### Riders
+
+- GET /riders - Get all riders
+- GET /riders/rankings - Get rider rankings
+- POST /riders - Add riders to team or swap classifications
+- DELETE /riders - Remove riders from teams
+
+### Stages
+
+- GET /stages - Get all stages
+- GET /stages/:stage_id/results - Get specific stage results
+
+## Future Improvements
+
+- Moving to sessions and cookies instead of Client Side storing of JWT Tokens
+- Real-time updates using WebSockets for live race tracking
+- Email or in-app notifications for team updates and race events
+- Advanced statistics with in-depth stats and performance charts for riders and teams
+
+## Project Structure
+
+```
 Fantasy_Cycling/
 ├── server/                 # Flask backend
 │   ├── app/                # Application code (models, routes, etc.)
@@ -132,34 +174,4 @@ Fantasy_Cycling/
 │   └── package.json        # Node dependencies
 ├── README.md               # Project documentation
 └── Pipfile                 # Python environment and dependency management
-API Endpoints
-Here are some key API endpoints used in the application:
-
-Authentication
-POST /auth/register: Register a new user.
-POST /auth/login: Log in a user.
-POST /auth/refresh: Refresh the JWT access token.
-GET /auth/user: Get the current logged-in user's details.
-Teams
-POST /teams: Create a new fantasy team.
-GET /teams: Get all teams for the logged-in user.
-PUT /teams/:team_id/roster: Update the team's roster.
-DELETE /teams: Delete your fantasy team.
-Riders
-GET /riders: Get a list of all riders.
-GET /riders/rankings: Get the rider rankings (available without login).
-POST /riders: Add riders to a team
-POST /riders: Swap classification of Riders on team from GC to Domestique.
-Delete /riders: remove riders from teams. Rider in Open Riders classification.
-Stages
-GET /stages: Get all stages.
-GET /stages/:stage_id/results: Get results for a specific stage.
-
-Future Improvements
-Moving to sessions and cookies instead of Client Side storing of JWT Tokens.
-Leagues
-POST /leagues: Create a new league.
-POST /leagues/:league_id/join: Join an existing league.
-Real-time updates: Integrate WebSockets for real-time team updates and live race tracking.
-Notifications: Add email or in-app notifications for team updates or important race events.
-Advanced statistics: Provide more in-depth stats for riders and teams, including performance charts.
+```
