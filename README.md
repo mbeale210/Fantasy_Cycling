@@ -90,7 +90,7 @@ Create a .env file in the client/ directory with the following variables:
 
 bash
 Copy code
-REACT_APP_API_URL=http://localhost:5000
+REACT_APP_API_URL=http://localhost:5555
 Running the App
 Backend (Flask)
 Activate the virtual environment:
@@ -150,10 +150,11 @@ GET /riders/rankings: Get the rider rankings (available without login).
 Stages
 GET /stages: Get all stages.
 GET /stages/:stage_id/results: Get results for a specific stage.
+
+Future Improvements
 Leagues
 POST /leagues: Create a new league.
 POST /leagues/:league_id/join: Join an existing league.
-Future Improvements
 Real-time updates: Integrate WebSockets for real-time team updates and live race tracking.
 Notifications: Add email or in-app notifications for team updates or important race events.
 Advanced statistics: Provide more in-depth stats for riders and teams, including performance charts.
