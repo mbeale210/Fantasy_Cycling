@@ -2,7 +2,7 @@
 
 ## Description
 
-Fantasy Cycling App is a web application that allows users to create and manage fantasy cycling teams, track rider performances, and compete in custom leagues. The app consists of a Flask backend and a React frontend.
+Fantasy Cycling App is a web application that allows users to create and manage fantasy cycling teams, track rider performances, and compete in a custom league. The app consists of a Flask backend and a React frontend using SQLAlchemy as the ORM.
 
 ## Features
 
@@ -136,6 +136,7 @@ Access the application at http://localhost:3000
 - POST /teams - Create new fantasy team
 - GET /teams - Get all teams for logged-in user
 - PUT /teams/:team_id/roster - Update team roster
+- PUT /teams/ - Update team name with form
 - DELETE /teams - Delete fantasy team
 
 ### Riders
